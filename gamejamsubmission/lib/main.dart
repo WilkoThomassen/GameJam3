@@ -1,20 +1,13 @@
+import 'package:gamejamsubmission/src/app/app.dart';
+import 'package:gamejamsubmission/src/game/game.dart';
+import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(ProviderScope(parent: globalScope, child: BakiTakiApp()));
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
-}
+ProviderContainer globalScope = ProviderContainer();
+GameEventProcessor gameEventProcessor = GameEventProcessor();
+BakiTakiGame gameRef = BakiTakiGame();
