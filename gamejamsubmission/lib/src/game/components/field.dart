@@ -27,6 +27,7 @@ class Field extends PositionComponent with RiverpodComponentMixin {
     fieldPaint = Paint()
       ..color = ColorTheme.fieldColorBoring
       ..style = PaintingStyle.fill;
+    fieldPaint.darken(fieldConfig.darkness);
     groundPaint = Paint()
       ..color = ColorTheme.fieldColorGround
       ..style = PaintingStyle.fill;
@@ -34,6 +35,10 @@ class Field extends PositionComponent with RiverpodComponentMixin {
       ..color = ColorTheme.fieldColorObstacle
       ..style = PaintingStyle.fill;
     numberPaintStyle = TextStyle(color: ColorTheme.debugTextColor);
+    if (fieldConfig.hasHighObstacle) {
+      obstaclePaint.darken(0.2);
+    }
+    moveUpFactor = fieldConfig.hasHighObstacle ? 2 : 1;
   }
 
   late PaintCoordinates fieldPaintCoordinates;
@@ -47,6 +52,7 @@ class Field extends PositionComponent with RiverpodComponentMixin {
   double _perspective = 0;
   late double _fieldGroundDepth;
   late bool _showDebugInfo;
+  late int moveUpFactor;
 
   @override
   void onMount() {
@@ -97,9 +103,42 @@ class Field extends PositionComponent with RiverpodComponentMixin {
         bottom: Vector2(fieldPaintCoordinates.bottom.x,
             fieldPaintCoordinates.bottom.y + _factorize(_fieldGroundDepth)));
 
-    canvas.drawPath(fieldPaintCoordinates.toPath(), fieldPaint);
-    canvas.drawPath(
-        fieldPaintCoordinates.toPath(), _getBorderPaint(fieldPaint));
+    if (fieldConfig.hasObstacle) {
+      canvas.drawPath(
+          fieldLeftGroundPaintCoordinates
+              .moveLeftUp(moveUpFactor, _factorize(_fieldGroundDepth))
+              .toPath(),
+          obstaclePaint.clone()..darken(0.1));
+      canvas.drawPath(
+          fieldLeftGroundPaintCoordinates
+              .moveLeftUp(moveUpFactor, _factorize(_fieldGroundDepth))
+              .toPath(),
+          _getBorderPaint(obstaclePaint));
+      canvas.drawPath(
+          fieldRightGroundPaintCoordinates
+              .moveRightUp(moveUpFactor, _factorize(_fieldGroundDepth))
+              .toPath(),
+          obstaclePaint.clone()..darken(0.2));
+      canvas.drawPath(
+          fieldRightGroundPaintCoordinates
+              .moveRightUp(moveUpFactor, _factorize(_fieldGroundDepth))
+              .toPath(),
+          _getBorderPaint(obstaclePaint));
+      canvas.drawPath(
+          fieldPaintCoordinates
+              .moveUp(moveUpFactor, _factorize(_fieldGroundDepth))
+              .toPath(),
+          obstaclePaint);
+      canvas.drawPath(
+          fieldPaintCoordinates
+              .moveUp(moveUpFactor, _factorize(_fieldGroundDepth))
+              .toPath(),
+          _getBorderPaint(obstaclePaint));
+    } else {
+      canvas.drawPath(fieldPaintCoordinates.toPath(), fieldPaint);
+      canvas.drawPath(
+          fieldPaintCoordinates.toPath(), _getBorderPaint(fieldPaint));
+    }
 
     if (fieldConfig.hasGroundLeft) {
       canvas.drawPath(fieldLeftGroundPaintCoordinates.toPath(), groundPaint);
