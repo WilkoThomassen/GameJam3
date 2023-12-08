@@ -40,9 +40,11 @@ extension GameExtension on BakiGame {
     final fieldSituation = getSituationFieldById(fieldId);
     final fieldBakiCount = fieldSituation.bakis.length;
 
-    var centerOffset = level.fieldSize * 0.15;
-    var bakiXPosition = fieldPosition.x;
-    var bakiYPosition = fieldPosition.y - (level.fieldSize / 4);
+    final centerOffset = level.fieldSize * 0.15;
+    var bakiXPosition = fieldPosition.x - (level.fieldSize / 2);
+    ;
+
+    var bakiYPosition = fieldPosition.y - (level.fieldSize / 1.5);
 
     // more baki's on field means placement more to the lef or right
     switch (fieldBakiCount) {

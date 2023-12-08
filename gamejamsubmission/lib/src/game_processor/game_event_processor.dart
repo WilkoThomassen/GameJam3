@@ -1,11 +1,9 @@
-import 'package:gamejamsubmission/src/game/components/baki_layout.dart';
-import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
-import 'package:gamejamsubmission/src/game/models/field.dart';
-import 'package:gamejamsubmission/src/game/models/gameplay/placement_result.dart';
-import 'package:gamejamsubmission/src/game/state/exploding_provider.dart';
 import 'package:gamejamsubmission/main.dart';
+import 'package:gamejamsubmission/src/game/models/field.dart';
+import 'package:gamejamsubmission/src/game/processors/situation_processor.dart';
 
 import '../app/state/app_provider.dart';
+import '../game/models/models.dart';
 import '../game/state/game_provider.dart';
 import '../game_config/config.dart';
 
@@ -25,49 +23,12 @@ class GameEventProcessor {
     globalScope.read(appProvider.notifier).setupGame();
   }
 
-  void placeBakiOnField(FieldConfig field) {
-    // check if player can place its baki on the field
-    // if placement is not allowed newBaki will be null
-    final placementResult =
-        globalScope.read(gameProvider.notifier).placeBaki(field.fieldId);
-
-    if (placementResult.placedBaki != null) {
-      // get baki position based on new field situation
-      gameRef.addBakiOnField(placementResult.placedBaki!, field);
-    }
-
-    if (placementResult.placementStatus == PlacementStatus.explode) {
-      // get bakis from fieldSituation
-      final situationField = globalScope
-          .read(gameProvider.notifier)
-          .gameState
-          .getSituationFieldById(field.fieldId);
-      final fieldBakis =
-          List<BakiLayout>.from(situationField.bakis.map((b) => b.bakiLayout));
-
-      // remove baki from field place bakis on surrounding fields
-      globalScope.read(gameProvider.notifier).explode(field.fieldId);
-
-      // let the explosions begin
-      gameRef.explode(field, fieldBakis);
-    }
-
-    if (placementResult.placedBaki != null &&
-        placementResult.placementStatus != PlacementStatus.explode) {
-      globalScope.read(gameProvider.notifier).nextTurn();
-    }
-  }
-
-  void endTurn() {
-    globalScope.read(gameProvider.notifier).nextTurn();
-  }
-
-  void explodeOnChainReaction(FieldConfig field, List<BakiLayout> fieldBakis) {
-    // remove baki from field place bakis on surrounding fields
-    globalScope.read(gameProvider.notifier).explode(field.fieldId);
-
-    // let the explosions begin
-    gameRef.explode(field, fieldBakis);
+  void placeFlameOnField() {
+    // generate players flame in game
+    final placeResult = gameRef.placeFlameOnField();
+    // manage it in game state
+    SituationProcessor.placeBakiOnField(
+        placeResult.placedBaki, placeResult.fieldId);
   }
 
   void quitGame() {

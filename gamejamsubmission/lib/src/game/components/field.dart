@@ -11,17 +11,16 @@ import 'package:flutter/material.dart';
 
 class Field extends PositionComponent with RiverpodComponentMixin {
   final FieldConfig fieldConfig;
-  final VoidCallback onTap;
+
   late final PolygonComponent leftGround;
   late final PolygonComponent rightGround;
 
-  Field(
-      {required this.fieldConfig,
-      required Vector2 size,
-      required Vector2 position,
-      required int priority,
-      required this.onTap})
-      : super(size: size, position: position, priority: priority) {
+  Field({
+    required this.fieldConfig,
+    required Vector2 size,
+    required Vector2 position,
+    required int priority,
+  }) : super(size: size, position: position, priority: priority) {
     anchor = Anchor.center;
 
     fieldPaint = Paint()

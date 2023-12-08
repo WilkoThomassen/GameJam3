@@ -114,28 +114,32 @@ class ConfiguratorState extends ConsumerState<Configurator>
                                   .read(gameConfigProvider.notifier)
                                   .setPlayers(value.toInt());
                             })),
-                    Button(
-                      onPressed: () {
-                        gameEventProcessor.createGame();
-                        gameEventProcessor.startGame();
-                      },
-                      text: 'Regenerate level',
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Button(
-                      onPressed: () {
-                        controller.reset();
-                        controller.addListener(() {
-                          ref
-                              .read(gameConfigProvider.notifier)
-                              .setPerspective(animation.value);
-                        });
-                        controller.forward();
-                      },
-                      text: 'Start animation',
-                    ),
+                    Row(
+                      children: [
+                        Button(
+                          onPressed: () {
+                            gameEventProcessor.createGame();
+                            gameEventProcessor.startGame();
+                          },
+                          text: 'Regenerate level',
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Button(
+                          onPressed: () {
+                            controller.reset();
+                            controller.addListener(() {
+                              ref
+                                  .read(gameConfigProvider.notifier)
+                                  .setPerspective(animation.value);
+                            });
+                            controller.forward();
+                          },
+                          text: 'Start animation',
+                        ),
+                      ],
+                    )
                   ],
                 ))
               ],

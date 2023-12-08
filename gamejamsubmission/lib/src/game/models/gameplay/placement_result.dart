@@ -1,10 +1,10 @@
+import 'package:gamejamsubmission/src/game/models/field.dart';
+
 import '../baki.dart';
 
 class PlacementResult {
-  final Baki? placedBaki;
-  final PlacementStatus placementStatus;
+  final Baki placedBaki;
+  final int fieldId;
 
-  PlacementResult({this.placedBaki, required this.placementStatus});
+  PlacementResult({required this.placedBaki, required this.fieldId});
 }
-
-enum PlacementStatus { notPlaced, placed, explode }

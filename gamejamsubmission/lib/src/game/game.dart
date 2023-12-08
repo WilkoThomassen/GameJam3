@@ -5,6 +5,7 @@ import 'package:gamejamsubmission/src/game/components/baki_layout.dart';
 import 'package:gamejamsubmission/src/game/components/components.dart';
 import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
 import 'package:gamejamsubmission/src/game/game_exports.dart';
+import 'package:gamejamsubmission/src/game/generators/baki_generator.dart';
 import 'package:gamejamsubmission/src/game/helpers/field_helper.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
 import 'package:gamejamsubmission/main.dart';
@@ -13,6 +14,7 @@ import 'package:flame/game.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../game_config/config.dart';
+import 'graphics/graphics.dart';
 import 'graphics/graphics_constants.dart';
 
 class BakiTakiGame extends FlameGame with RiverpodGameMixin {
@@ -20,6 +22,8 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin {
   late BakiGame game;
   late Vector2 gameSize;
   WidgetRef? ref;
+
+  Iterable<Field> get fields => children.whereType<Field>();
 
   void initialize(WidgetRef widgetRef) {
     ref ??= widgetRef;
@@ -58,20 +62,18 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin {
           config.perspective);
       add(
         Field(
-            fieldConfig: fieldConfig,
-            size: Vector2(game.level.fieldSize, game.level.fieldSize),
-            position: fieldPosition,
-            priority: fieldConfig.getFieldDrawPriority(),
-            onTap: () {
-              gameEventProcessor.placeBakiOnField(fieldConfig);
-            }),
+          fieldConfig: fieldConfig,
+          size: Vector2(game.level.fieldSize, game.level.fieldSize),
+          position: fieldPosition,
+          priority: fieldConfig.getFieldDrawPriority(),
+        ),
       );
     }
 
     globalScope.listen(gameConfigProvider, (previous, value) {
       // reposition field when perspective is changed
       if (value.perspective != previous?.perspective) {
-        for (var field in children.whereType<Field>()) {
+        for (var field in fields) {
           field.position = _getFieldPosition(
               field.fieldConfig.locationX,
               field.fieldConfig.locationY,
@@ -79,24 +81,49 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin {
               basePosition,
               field.fieldConfig.hasObstacle,
               value.perspective);
+
+          // TODO: get flames and freezes on field and reposition as well
+          // TODO: only do this when game is actually started
         }
       }
     });
+
+    // once the game is drawn, the flame can be placed
+    gameEventProcessor.placeFlameOnField();
 
     if (config.showDebugInfo) {
       add(FpsTextComponent(position: Vector2(size.x - 100, size.y - 24)));
     }
   }
 
-  void addBakiOnField(Baki bakiToPlace, FieldConfig fieldConfig) {
-    final fieldPosition =
-        FieldHelper.getFieldComponentByFieldId(fieldConfig.fieldId).position;
+  PlacementResult placeFlameOnField() {
+    final flameSize = game.level.fieldSize / 2.5;
 
-    add(bakiToPlace.bakiLayout
-      ..position = game.getLocationByFieldSituation(
-          fieldPosition: fieldPosition, fieldId: fieldConfig.fieldId)
-      ..priority =
-          fieldConfig.fieldId + GraphicsConstants.drawLayerPriorityTreshold);
+    // create flame to spawn
+    final flameData =
+        BakiGenerator().generate(flameSize, color: ColorTheme.flame);
+    final flamePlayer = BakiLayout(flameData);
+
+    final Baki flame = Baki(
+        fromPlayer:
+            Player(id: 'freeze', name: 'freeze', color: ColorTheme.flame),
+        bakiLayout: flamePlayer);
+
+    // drop it on the first available field on the left side of the board
+    for (final field in fields.toList().reversed) {
+      if (!field.fieldConfig.hasObstacle &&
+          !field.fieldConfig.hasHighObstacle) {
+        add(flame.bakiLayout
+          ..position = game.getLocationByFieldSituation(
+              fieldPosition: field.position, fieldId: field.fieldConfig.fieldId)
+          ..priority = field.fieldConfig.fieldId +
+              GraphicsConstants.drawLayerPriorityTreshold);
+        return PlacementResult(
+            placedBaki: flame, fieldId: field.fieldConfig.fieldId);
+      }
+    }
+    // todo: find another solution for this dummy (actual dead code)
+    return PlacementResult(placedBaki: flame, fieldId: 1);
   }
 
   void explode(FieldConfig field, List<BakiLayout> fieldBakis) {
