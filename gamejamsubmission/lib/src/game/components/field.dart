@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:gamejamsubmission/main.dart';
-import 'package:gamejamsubmission/src/game/components/field_deck.dart';
 import 'package:gamejamsubmission/src/game_config/config.dart';
 import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
 import 'package:gamejamsubmission/src/game/graphics/graphics.dart';
@@ -25,24 +24,8 @@ class Field extends PositionComponent with RiverpodComponentMixin {
       : super(size: size, position: position, priority: priority) {
     anchor = Anchor.center;
 
-    // fieldLeftGroundPaintCoordinates = PaintCoordinates(
-    //     left: Vector2(fieldPaintCoordinates.left.x,
-    //         fieldPaintCoordinates.left.y + gameConfig.fieldGroundDepth),
-    //     top: fieldPaintCoordinates.left,
-    //     right: fieldPaintCoordinates.bottom,
-    //     bottom: Vector2(fieldPaintCoordinates.bottom.x,
-    //         fieldPaintCoordinates.bottom.y + gameConfig.fieldGroundDepth));
-
-    // fieldRightGroundPaintCoordinates = PaintCoordinates(
-    //     left: fieldPaintCoordinates.bottom,
-    //     top: fieldPaintCoordinates.right,
-    //     right: Vector2(fieldPaintCoordinates.right.x,
-    //         fieldPaintCoordinates.right.y + gameConfig.fieldGroundDepth),
-    //     bottom: Vector2(fieldPaintCoordinates.bottom.x,
-    //         fieldPaintCoordinates.bottom.y + gameConfig.fieldGroundDepth));
-
     fieldPaint = Paint()
-      ..color = ColorTheme.fieldColorIce
+      ..color = ColorTheme.fieldColorBoring
       ..style = PaintingStyle.fill;
     groundPaint = Paint()
       ..color = ColorTheme.fieldColorGround
@@ -50,6 +33,7 @@ class Field extends PositionComponent with RiverpodComponentMixin {
     obstaclePaint = Paint()
       ..color = ColorTheme.fieldColorObstacle
       ..style = PaintingStyle.fill;
+    numberPaintStyle = TextStyle(color: ColorTheme.debugTextColor);
   }
 
   late PaintCoordinates fieldPaintCoordinates;
@@ -58,16 +42,24 @@ class Field extends PositionComponent with RiverpodComponentMixin {
   late Paint fieldPaint;
   late Paint groundPaint;
   late Paint obstaclePaint;
+  late TextStyle numberPaintStyle;
   double get fieldSize => size.x / 2;
-  double perspective = 0;
+  double _perspective = 0;
+  late double _fieldGroundDepth;
+  late bool _showDebugInfo;
 
   @override
   void onMount() {
     addToGameWidgetBuild(() {
       var config = ref.read(gameConfigProvider);
-      perspective = config.perspective;
+      _perspective = config.perspective;
+      _fieldGroundDepth = config.fieldGroundDepth;
+      _showDebugInfo = config.showDebugInfo;
       ref.listen(gameConfigProvider, (previous, value) {
-        perspective = value.perspective;
+        if (previous?.perspective != value.perspective) {
+          _perspective = value.perspective;
+        }
+        _showDebugInfo = value.showDebugInfo;
       });
     });
 
@@ -85,95 +77,60 @@ class Field extends PositionComponent with RiverpodComponentMixin {
   void render(Canvas canvas) {
     fieldPaintCoordinates = PaintCoordinates(
         left: Vector2(-fieldSize, -0),
-        top: Vector2(0, -fieldSize + (perspective * fieldSize)),
+        top: Vector2(0, -fieldSize + _factorize(_perspective)),
         right: Vector2(fieldSize, 0),
-        bottom: Vector2(0, fieldSize - (perspective * fieldSize)));
+        bottom: Vector2(0, fieldSize - _factorize(_perspective)));
+
+    fieldLeftGroundPaintCoordinates = PaintCoordinates(
+        left: Vector2(fieldPaintCoordinates.left.x,
+            fieldPaintCoordinates.left.y + _factorize(_fieldGroundDepth)),
+        top: fieldPaintCoordinates.left,
+        right: fieldPaintCoordinates.bottom,
+        bottom: Vector2(fieldPaintCoordinates.bottom.x,
+            fieldPaintCoordinates.bottom.y + _factorize(_fieldGroundDepth)));
+
+    fieldRightGroundPaintCoordinates = PaintCoordinates(
+        left: fieldPaintCoordinates.bottom,
+        top: fieldPaintCoordinates.right,
+        right: Vector2(fieldPaintCoordinates.right.x,
+            fieldPaintCoordinates.right.y + _factorize(_fieldGroundDepth)),
+        bottom: Vector2(fieldPaintCoordinates.bottom.x,
+            fieldPaintCoordinates.bottom.y + _factorize(_fieldGroundDepth)));
+
     canvas.drawPath(fieldPaintCoordinates.toPath(), fieldPaint);
     canvas.drawPath(
         fieldPaintCoordinates.toPath(), _getBorderPaint(fieldPaint));
 
+    if (fieldConfig.hasGroundLeft) {
+      canvas.drawPath(fieldLeftGroundPaintCoordinates.toPath(), groundPaint);
+      canvas.drawPath(fieldLeftGroundPaintCoordinates.toPath(),
+          _getBorderPaint(groundPaint));
+    }
+    if (fieldConfig.hasGroundRight) {
+      canvas.drawPath(fieldRightGroundPaintCoordinates.toPath(), groundPaint);
+      canvas.drawPath(fieldRightGroundPaintCoordinates.toPath(),
+          _getBorderPaint(groundPaint));
+    }
+
+    if (_showDebugInfo) {
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: fieldConfig.fieldId.toString(),
+          style: numberPaintStyle,
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout(
+        minWidth: 0,
+        maxWidth: fieldSize,
+      );
+      textPainter.paint(canvas, Offset.zero);
+    }
+
     super.render(canvas);
   }
 
-  // @override
-  // Future<void> onLoad() async {
-  //   super.onLoad();
-
-  //   if (fieldConfig.hasObstacle) {
-  //     // highObstacles should move up higher than normal obstacles
-  //     int moveUpFactor = fieldConfig.hasHighObstacle ? 2 : 1;
-
-  //     if (fieldConfig.hasHighObstacle) {
-  //       obstaclePaint.darken(0.2);
-  //     }
-
-  //     add(PolygonComponent.relative(
-  //         fieldLeftGroundPaintCoordinates
-  //             .moveLeftUp(moveUpFactor, gameConfig.fieldGroundDepth)
-  //             .toVectors(),
-  //         parentSize: size,
-  //         paint: obstaclePaint.clone()..darken(0.1)));
-  //     add(PolygonComponent.relative(
-  //         fieldRightGroundPaintCoordinates
-  //             .moveRightUp(moveUpFactor, gameConfig.fieldGroundDepth)
-  //             .toVectors(),
-  //         parentSize: size,
-  //         paint: obstaclePaint.clone()..darken(0.2)));
-  //     add(PolygonComponent.relative(
-  //         fieldPaintCoordinates
-  //             .moveUp(moveUpFactor, gameConfig.fieldGroundDepth)
-  //             .toVectors(),
-  //         parentSize: size,
-  //         paint: obstaclePaint));
-  //     // and the borders
-  //     add(PolygonComponent.relative(
-  //         fieldLeftGroundPaintCoordinates
-  //             .moveLeftUp(moveUpFactor, gameConfig.fieldGroundDepth)
-  //             .toVectors(),
-  //         parentSize: size,
-  //         paint: _getBorderPaint(obstaclePaint)));
-  //     add(PolygonComponent.relative(
-  //         fieldRightGroundPaintCoordinates
-  //             .moveRightUp(moveUpFactor, gameConfig.fieldGroundDepth)
-  //             .toVectors(),
-  //         parentSize: size,
-  //         paint: _getBorderPaint(obstaclePaint)));
-  //     add(PolygonComponent.relative(
-  //         fieldPaintCoordinates
-  //             .moveUp(moveUpFactor, gameConfig.fieldGroundDepth)
-  //             .toVectors(),
-  //         parentSize: size,
-  //         paint: _getBorderPaint(obstaclePaint)));
-  //   } else {
-  //     add(FieldDeck(fieldPaintCoordinates, fieldPaint, size,
-  //         fieldConfig.darkness, onTap));
-  //     add(PolygonComponent.relative(fieldPaintCoordinates.toVectors(),
-  //         parentSize: size, paint: _getBorderPaint(fieldPaint)));
-  //   }
-
-  //   if (fieldConfig.hasGroundLeft) {
-  //     add(PolygonComponent.relative(fieldLeftGroundPaintCoordinates.toVectors(),
-  //         parentSize: size, paint: groundPaint));
-  //     add(PolygonComponent.relative(fieldLeftGroundPaintCoordinates.toVectors(),
-  //         parentSize: size, paint: _getBorderPaint(groundPaint)));
-  //   }
-  //   if (fieldConfig.hasGroundRight) {
-  //     add(PolygonComponent.relative(
-  //         fieldRightGroundPaintCoordinates.toVectors(),
-  //         parentSize: size,
-  //         paint: groundPaint));
-  //     add(PolygonComponent.relative(
-  //         fieldRightGroundPaintCoordinates.toVectors(),
-  //         parentSize: size,
-  //         paint: _getBorderPaint(groundPaint)));
-  //   }
-  //   if (gameConfig.showDebugInfo) {
-  //     TextPaint numberPaint = TextPaint(
-  //         style: const TextStyle(color: Color.fromARGB(255, 161, 42, 42)));
-  //     add(TextComponent(
-  //         text: fieldConfig.fieldId.toString(),
-  //         textRenderer: numberPaint,
-  //         position: Vector2(size.x / 2.5, size.y / 2.5)));
-  //   }
-  //}
+  double _factorize(double input) {
+    return input * fieldSize;
+  }
 }
