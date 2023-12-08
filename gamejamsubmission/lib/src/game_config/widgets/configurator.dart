@@ -6,10 +6,29 @@ import 'package:gamejamsubmission/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Configurator extends ConsumerWidget {
+class Configurator extends ConsumerStatefulWidget {
   const Configurator({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => ConfiguratorState();
+}
+
+class ConfiguratorState extends ConsumerState<Configurator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation<double> animation;
+
+  @override
+  void initState() {
+    controller =
+        AnimationController(duration: const Duration(seconds: 3), vsync: this);
+    animation = Tween<double>(begin: 0.2, end: 0.5).animate(
+        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn));
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     GameConfig config = ref.watch(gameConfigProvider);
     return Container(
         color: Theme.of(context).colorScheme.secondary,
@@ -33,7 +52,7 @@ class Configurator extends ConsumerWidget {
                               value: config.perspective,
                               min: 0,
                               max: 1,
-                              divisions: 10,
+                              divisions: 100,
                               label: config.perspective.toString(),
                               onChanged: (double value) {
                                 ref
@@ -101,6 +120,21 @@ class Configurator extends ConsumerWidget {
                         gameEventProcessor.startGame();
                       },
                       text: 'Regenerate level',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Button(
+                      onPressed: () {
+                        controller.reset();
+                        controller.addListener(() {
+                          ref
+                              .read(gameConfigProvider.notifier)
+                              .setPerspective(animation.value);
+                        });
+                        controller.forward();
+                      },
+                      text: 'Start animation',
                     ),
                   ],
                 ))

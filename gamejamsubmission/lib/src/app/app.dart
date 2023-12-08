@@ -1,3 +1,4 @@
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:gamejamsubmission/src/game_config/config.dart';
 import 'package:gamejamsubmission/src/game/widgets/widgets.dart';
 import 'package:flame/game.dart';
@@ -7,6 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../main.dart';
 import 'models/app.dart';
 import 'state/app_provider.dart';
+
+final GlobalKey<RiverpodAwareGameWidgetState> gameWidgetKey =
+    GlobalKey<RiverpodAwareGameWidgetState>();
 
 class BakiTakiApp extends ConsumerWidget {
   const BakiTakiApp({super.key});
@@ -20,7 +24,7 @@ class BakiTakiApp extends ConsumerWidget {
     return MaterialApp(
         title: 'BakiTaki',
         theme: ThemeData(
-            textTheme: TextTheme()
+            textTheme: const TextTheme()
                 .apply(bodyColor: Colors.blue, displayColor: Colors.pink),
             primarySwatch: Colors.deepOrange,
             colorScheme: const ColorScheme.dark(
@@ -34,12 +38,15 @@ class BakiTakiApp extends ConsumerWidget {
                 child: app.runningGame != null
                     ? Stack(
                         children: [
-                          GameWidget(game: gameRef),
+                          RiverpodAwareGameWidget(
+                            game: gameRef,
+                            key: gameWidgetKey,
+                          ),
                           Status(),
                         ],
                       )
-                    : Center(child: Text('Press regenerate'))),
-            const Expanded(flex: 3, child: Configurator())
+                    : const Center(child: Text('Press regenerate'))),
+            Expanded(flex: 3, child: Configurator())
           ],
         )));
   }

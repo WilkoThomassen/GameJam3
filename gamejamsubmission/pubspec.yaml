@@ -15,6 +15,7 @@ dependencies:
   background_patterns: ^0.0.9
   riverpod: ^2.3.1
   flutter_riverpod: ^2.3.1    
+  flame_riverpod: ^5.0.0
 
 dev_dependencies:
   flutter_test:

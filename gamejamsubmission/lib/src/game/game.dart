@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:gamejamsubmission/src/game/components/baki_layout.dart';
 import 'package:gamejamsubmission/src/game/components/components.dart';
 import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
@@ -14,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../game_config/config.dart';
 import 'graphics/graphics_constants.dart';
 
-class BakiTakiGame extends FlameGame {
+class BakiTakiGame extends FlameGame with RiverpodGameMixin {
   late GameConfig config;
   late BakiGame game;
   late Vector2 gameSize;
@@ -53,10 +54,10 @@ class BakiTakiGame extends FlameGame {
           fieldConfig.locationY,
           game.level.fieldSize,
           basePosition,
-          fieldConfig.hasObstacle);
+          fieldConfig.hasObstacle,
+          config.perspective);
       add(
         Field(
-            gameConfig: config,
             fieldConfig: fieldConfig,
             size: Vector2(game.level.fieldSize, game.level.fieldSize),
             position: fieldPosition,
@@ -66,6 +67,21 @@ class BakiTakiGame extends FlameGame {
             }),
       );
     }
+
+    globalScope.listen(gameConfigProvider, (previous, value) {
+      // reposition field when perspective is changed
+      if (value.perspective != previous?.perspective) {
+        for (var field in children.whereType<Field>()) {
+          field.position = _getFieldPosition(
+              field.fieldConfig.locationX,
+              field.fieldConfig.locationY,
+              game.level.fieldSize,
+              basePosition,
+              field.fieldConfig.hasObstacle,
+              value.perspective);
+        }
+      }
+    });
 
     if (config.showDebugInfo) {
       add(FpsTextComponent(position: Vector2(size.x - 100, size.y - 24)));
@@ -101,8 +117,8 @@ class BakiTakiGame extends FlameGame {
   }
 
   Vector2 _getFieldPosition(int row, int column, double size,
-      Vector2 basePosition, bool hasObstacle) {
-    double halfHeight = size * (1 - config.perspective) / 2;
+      Vector2 basePosition, bool hasObstacle, double perspective) {
+    double halfHeight = size * (1 - perspective) / 2;
 
     // x = x + (halfOfWidth) * column + (halfOfWidth) * row   >> for relative indenting each row
     // y = y + (halfOfHeight) * row - (halfOfHeight) * column  >> for relative indenting each row

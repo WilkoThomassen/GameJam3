@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:gamejamsubmission/src/game/graphics/graphics.dart';
 import 'package:flame/components.dart';
 
@@ -30,5 +31,16 @@ extension PaintCoordinatesExtension on PaintCoordinates {
   Vector2 _moveUp(Vector2 input, int factor, double fieldGroundDepth) {
     double delta = fieldGroundDepth * factor;
     return Vector2(input.x, input.y - delta);
+  }
+
+  Path toPath() {
+    Path result = Path();
+    result.moveTo(left.x, left.y);
+    result.lineTo(top.x, top.y);
+    result.lineTo(right.x, right.y);
+    result.lineTo(bottom.x, bottom.y);
+    result.close();
+
+    return result;
   }
 }
