@@ -10,8 +10,9 @@ class ColorTheme {
 
   static Color frozen = const Color.fromARGB(255, 253, 252, 240);
 
-  static Color fieldColorFinish = const Color.fromARGB(255, 169, 255, 77);
-  static Color fieldColorBoring = Color.fromARGB(255, 180, 183, 177);
+  static Color fieldColorFinish = Color.fromARGB(255, 77, 255, 89);
+  // static Color fieldColorBoring = Color.fromARGB(255, 180, 183, 177);
+  static Color fieldColorBoring = Color.fromARGB(255, 140, 208, 197);
   static Color fieldColorSelected = Color.fromARGB(255, 103, 16, 103);
   static Color fieldColorHovered = Color.fromARGB(255, 248, 55, 248);
   static Color fieldColorGround = const Color.fromARGB(255, 219, 148, 49);
