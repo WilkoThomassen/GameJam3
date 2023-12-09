@@ -1,14 +1,14 @@
+import 'package:flame/collisions.dart';
 import 'package:gamejamsubmission/src/game/graphics/models/baki_data.dart';
 import 'package:gamejamsubmission/src/game/models/player.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
-import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 import 'dart:ui';
 
 import '../graphics/color_theme.dart';
 
-class BakiLayout extends PositionComponent {
+class BakiLayout extends PositionComponent with CollisionCallbacks {
   final BakiData bakiData;
   late Paint body;
   late Paint bodyBorder;
@@ -26,6 +26,9 @@ class BakiLayout extends PositionComponent {
   VoidCallback? onJumpCompleted;
 
   bool toLeft = true;
+  bool defeated = false;
+
+  late ShapeHitbox hitbox;
 
   final int explodeAnimationDurationMs = 500;
 
@@ -65,6 +68,12 @@ class BakiLayout extends PositionComponent {
     rightIrisLookUpOffset = Offset(rightEyeOffset.dx, rightEyeOffset.dy / 1.25);
 
     if (bakiData.isFlipped) flipHorizontally();
+
+    // define hitbox for collision
+    hitbox = CircleHitbox()
+      ..renderShape = false
+      ..paint = eyeBorder;
+    add(hitbox);
   }
 
   void _setShader() {
@@ -126,15 +135,49 @@ class BakiLayout extends PositionComponent {
   void render(Canvas canvas) {
     canvas.drawPath(bakiData.path, body);
     canvas.drawPath(bakiData.path, bodyBorder);
-    canvas.drawCircle(leftEyeOffset, bakiData.leftEyeSize, eye);
-    canvas.drawCircle(leftEyeOffset, bakiData.leftEyeSize, eyeBorder);
-    // baki looks up when it jumps
-    canvas.drawCircle(position.y < 50 ? leftIrisLookUpOffset : leftIrisOffset,
-        bakiData.leftEyeSize / 6, iris);
-    canvas.drawCircle(rightEyeOffset, bakiData.rightEyeSize, eye);
-    canvas.drawCircle(rightEyeOffset, bakiData.rightEyeSize, eyeBorder);
-    // baki looks up when it jumps
-    canvas.drawCircle(position.y < 50 ? rightIrisLookUpOffset : rightIrisOffset,
-        bakiData.rightEyeSize / 6, iris);
+    if (!defeated) {
+      canvas.drawCircle(leftEyeOffset, bakiData.leftEyeSize, eye);
+      canvas.drawCircle(leftEyeOffset, bakiData.leftEyeSize, eyeBorder);
+      canvas.drawCircle(leftIrisOffset, bakiData.leftEyeSize / 6, iris);
+      canvas.drawCircle(rightEyeOffset, bakiData.rightEyeSize, eye);
+      canvas.drawCircle(rightEyeOffset, bakiData.rightEyeSize, eyeBorder);
+      canvas.drawCircle(rightIrisOffset, bakiData.rightEyeSize / 6, iris);
+    } else {
+      // dead eyes
+      canvas.drawLine(leftEyeOffset,
+          _getDeadEyeOffset(leftEyeOffset, bakiData.leftEyeSize), eyeBorder);
+
+      canvas.drawLine(
+          Offset(leftEyeOffset.dx, leftEyeOffset.dy + bakiData.leftEyeSize),
+          Offset(leftEyeOffset.dx + bakiData.leftEyeSize, leftEyeOffset.dy),
+          eyeBorder);
+
+      canvas.drawLine(rightEyeOffset,
+          _getDeadEyeOffset(rightEyeOffset, bakiData.rightEyeSize), eyeBorder);
+
+      canvas.drawLine(
+          Offset(rightEyeOffset.dx, rightEyeOffset.dy + bakiData.rightEyeSize),
+          Offset(rightEyeOffset.dx + bakiData.rightEyeSize, rightEyeOffset.dy),
+          eyeBorder);
+    }
+  }
+
+  Offset _getDeadEyeOffset(Offset offset, double size) {
+    return Offset(offset.dx + size, offset.dy + size);
+  }
+
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+    // only defeated when collision is with flame
+    if ((other as BakiLayout).body.color == ColorTheme.flame ||
+        body.color == ColorTheme.flame) {
+      body.color = ColorTheme.frozen;
+      defeated = true;
+      _setShader();
+    }
   }
 }

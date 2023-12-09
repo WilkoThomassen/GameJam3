@@ -74,10 +74,11 @@ class GameEventProcessor {
         freezeToJump.locationFieldId);
     surrFields.sort();
 
-    // jump to one of the highest fieldIds, that is most likely to the
+    // jump to one of the two highest fieldIds, that is most likely to the
     // bottom of the field
     int random = Random().nextInt(2);
-    final targetFieldId = surrFields[surrFields.length > 1 ? random : 0];
+    final targetFieldId =
+        surrFields.reversed.toList()[surrFields.length > 1 ? random : 0];
 
     gameRef.jumpFreeze(targetFieldId, freezeToJump);
     // manage it in game state

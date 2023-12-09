@@ -22,7 +22,8 @@ import 'graphics/graphics.dart';
 import 'graphics/graphics_constants.dart';
 import 'models/gameplay/game_input.dart';
 
-class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
+class BakiTakiGame extends FlameGame
+    with RiverpodGameMixin, KeyboardEvents, HasCollisionDetection {
   late GameConfig config;
   late BakiGame game;
   late Vector2 gameSize;
@@ -39,8 +40,6 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     globalScope.listen(gameProvider, (previous, next) {
       if (hasLayout && previous!.gameId != next!.gameId) {
         _drawGame();
-      } else {
-        log('wont repaint');
       }
     });
   }
