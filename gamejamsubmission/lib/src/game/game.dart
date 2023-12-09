@@ -28,6 +28,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
   late Vector2 gameSize;
   WidgetRef? ref;
   Baki? playerFlame;
+  Baki? preparedFreeze;
 
   Iterable<Field> get fields => children.whereType<Field>();
 
@@ -108,8 +109,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     final flamePlayer = BakiLayout(flameData);
 
     playerFlame = Baki(
-        fromPlayer:
-            Player(id: 'freeze', name: 'freeze', color: ColorTheme.flame),
+        fromPlayer: Player(id: 'flame', name: 'flame', color: ColorTheme.flame),
         bakiLayout: flamePlayer);
 
     // drop it on the first available field on the left side of the board
@@ -154,6 +154,45 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     gameRef.playerFlame!.bakiLayout.jumpTo(game.getLocationByFieldSituation(
         fieldPosition: targetField.position,
         fieldId: targetField.fieldConfig.fieldId));
+  }
+
+  PlacementResult prepareFreeze() {
+    final freezeSize = game.level.fieldSize / 2.5;
+
+    // create flame to spawn
+    final freezeData =
+        BakiGenerator().generate(freezeSize, color: ColorTheme.freeze);
+    final freezePlayer = BakiLayout(freezeData);
+
+    preparedFreeze = Baki(
+        fromPlayer:
+            Player(id: 'freeze', name: 'freeze', color: ColorTheme.freeze),
+        bakiLayout: freezePlayer);
+
+    final startPositionOffset = game.level.fieldSize * 1.1;
+
+    add(preparedFreeze!.bakiLayout
+      ..position = fields.first.position
+      ..x += startPositionOffset
+      ..y -= startPositionOffset);
+
+    // todo: find another solution for this dummy (actual dead code)
+    return PlacementResult(placedBaki: preparedFreeze!, fieldId: 1);
+  }
+
+  void spawnFreeze() {
+    for (final field in fields.toList()) {
+      if (!field.fieldConfig.hasObstacle &&
+          !field.fieldConfig.hasHighObstacle &&
+          !field.fieldConfig.isFinish) {
+        final targetPosition = game.getLocationByFieldSituation(
+            fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
+        preparedFreeze?.bakiLayout.priority = field.fieldConfig.fieldId +
+            GraphicsConstants.drawLayerPriorityTreshold;
+        preparedFreeze?.bakiLayout.jumpTo(targetPosition);
+        break;
+      }
+    }
   }
 
   @override

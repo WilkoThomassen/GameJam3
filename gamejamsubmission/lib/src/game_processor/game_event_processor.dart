@@ -53,6 +53,15 @@ class GameEventProcessor {
     }
   }
 
+  void prepareFreeze() {
+    gameRef.prepareFreeze();
+    Future.delayed(const Duration(seconds: 1), () => spawnFreeze());
+  }
+
+  void spawnFreeze() {
+    gameRef.spawnFreeze();
+  }
+
   void quitGame() {
     throw UnimplementedError();
   }

@@ -137,6 +137,7 @@ class ConfiguratorState extends ConsumerState<Configurator>
                               if (controller.isCompleted) {
                                 // once the game is drawn, the flame can be placed
                                 gameEventProcessor.placeFlameOnField();
+                                gameEventProcessor.prepareFreeze();
                               }
                             });
                             controller.forward();
@@ -149,6 +150,7 @@ class ConfiguratorState extends ConsumerState<Configurator>
                         Button(
                           onPressed: () {
                             gameEventProcessor.placeFlameOnField();
+                            gameEventProcessor.prepareFreeze();
                           },
                           text: 'Just start',
                         ),

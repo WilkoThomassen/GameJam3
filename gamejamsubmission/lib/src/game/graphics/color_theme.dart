@@ -5,8 +5,9 @@ class ColorTheme {
   // fields
   static Color debugTextColor = Color.fromARGB(255, 161, 42, 42);
 
-  static Color fieldColorIce = const Color.fromARGB(255, 125, 229, 255);
-  static Color flame = Color.fromARGB(255, 255, 117, 11);
+  static Color freeze = const Color.fromARGB(255, 125, 229, 255);
+  static Color flame = const Color.fromARGB(255, 255, 117, 11);
+
   static Color fieldColorFinish = const Color.fromARGB(255, 169, 255, 77);
   static Color fieldColorBoring = Color.fromARGB(255, 180, 183, 177);
   static Color fieldColorSelected = Color.fromARGB(255, 103, 16, 103);
