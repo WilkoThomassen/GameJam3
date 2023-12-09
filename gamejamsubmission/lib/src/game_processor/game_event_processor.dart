@@ -88,7 +88,13 @@ class GameEventProcessor {
   }
 
   void flameDefeated() {
-    globalScope.read(gameProvider.notifier).endGame(GameState.defeated);
+    // give it a couple a seconds to display defeated transformation of the
+    // flame player and then stop the game
+    Future.delayed(
+        const Duration(seconds: 2),
+        () => globalScope
+            .read(gameProvider.notifier)
+            .endGame(GameState.defeated));
   }
 
   void flameFinished() {

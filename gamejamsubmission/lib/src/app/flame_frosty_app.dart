@@ -46,8 +46,6 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
 // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    //final status = ref.watch(gameProvider);
-
     return MaterialApp(
         title: 'Flame vs Frosties',
         theme: ThemeData(
@@ -57,13 +55,11 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
             colorScheme: ColorScheme.dark(
                 primary: ColorTheme.freeze, secondary: ColorTheme.flame)),
         home: Scaffold(
-          body: gameState == GameState.started
-              ? LevelArena()
-              : gameState == GameState.idle
-                  ? _startScreen()
-                  : gameState == GameState.defeated
-                      ? _defeatedScreen()
-                      : Container(),
+          body: gameState == GameState.idle
+              ? _startScreen()
+              : gameState == GameState.defeated
+                  ? _defeatedScreen()
+                  : LevelArena(),
         ));
   }
 
@@ -102,7 +98,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-              padding: EdgeInsets.only(bottom: 150),
+              padding: EdgeInsets.only(bottom: 100),
               child: IconButton(
                 icon: const Icon(Icons.play_circle_fill_outlined),
                 color: ColorTheme.buttonForeground,
@@ -133,7 +129,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
           child: Padding(
               padding: EdgeInsets.only(bottom: 150),
               child: IconButton(
-                icon: const Icon(Icons.replay),
+                icon: const Icon(Icons.replay_outlined),
                 color: ColorTheme.buttonForeground,
                 hoverColor: ColorTheme.bakiPlayerOne,
                 iconSize: 200,
@@ -155,13 +151,13 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
     gameEventProcessor.startGame();
     gameRef.initialize(ref);
 
+    setState(() {
+      gameState = GameState.started;
+    });
+
     Future.delayed(const Duration(seconds: 1), () {
       gameEventProcessor.placeFlameOnField();
       _startSpawningFrosties();
-    });
-
-    setState(() {
-      gameState = GameState.started;
     });
   }
 

@@ -133,6 +133,8 @@ class BakiTakiGame extends FlameGame
   }
 
   GameInput getInput(Set<LogicalKeyboardKey> keysPressed) {
+    if (gameRef.playerFlame!.bakiLayout.defeated) return GameInput.none;
+
     if (keysPressed.contains(LogicalKeyboardKey.space)) return GameInput.action;
     if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) return GameInput.up;
     if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {

@@ -174,8 +174,7 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
   ) {
     super.onCollisionStart(intersectionPoints, other);
     // only defeated when collision is with flame
-    if ((other as BakiLayout).body.color == ColorTheme.flame ||
-        body.color == ColorTheme.flame) {
+    if (body.color == ColorTheme.flame) {
       body.color = ColorTheme.frozen;
       defeated = true;
       GameEventProcessor().flameDefeated();

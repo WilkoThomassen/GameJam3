@@ -6,10 +6,10 @@ import 'package:gamejamsubmission/src/app/levels.dart';
 import '../../main.dart';
 import '../game/models/level.dart';
 
-class LevelArena extends ConsumerWidget {
-  final GlobalKey<RiverpodAwareGameWidgetState> gameWidgetKey =
-      GlobalKey<RiverpodAwareGameWidgetState>();
+final GlobalKey<RiverpodAwareGameWidgetState> gameWidgetKey =
+    GlobalKey<RiverpodAwareGameWidgetState>();
 
+class LevelArena extends ConsumerWidget {
   LevelArena({super.key});
 
   @override
