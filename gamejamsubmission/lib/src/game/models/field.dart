@@ -7,12 +7,14 @@ class FieldConfig {
   final int locationX;
   final int locationY;
   final int fieldId;
+  final bool isFinish;
 
   FieldConfig(
       {required this.locationX,
       required this.locationY,
       required this.fieldId,
       required this.darkness,
+      this.isFinish = false,
       this.hasGroundLeft = false,
       this.hasGroundRight = false,
       this.hasObstacle = false,

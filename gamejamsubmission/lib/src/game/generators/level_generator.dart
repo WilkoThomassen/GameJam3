@@ -8,6 +8,7 @@ import '../../game_config/config.dart';
 class LevelGenerator {
   static Level generateLevel() {
     int fieldId = 1;
+    bool hasFinish = false;
 
     int totalFields = gridSize * gridSize;
 
@@ -21,11 +22,18 @@ class LevelGenerator {
         double darknessFactor = (0.4 / totalFields) * (totalFields - fieldId);
         bool isObstacle = obstacles.contains(fieldId);
         bool isHighObstacle = !isObstacle && !playGround.contains(fieldId);
+        bool isFinish = false;
+        if (!isObstacle && !hasFinish) {
+          isFinish = true;
+          hasFinish = true;
+        }
+
         final field = FieldConfig(
             fieldId: fieldId,
             locationX: columnIndex,
             locationY: rowIndex,
             darkness: darknessFactor,
+            isFinish: isFinish,
             hasGroundLeft: rowIndex == 1,
             hasGroundRight: columnIndex == gridSize - 1,
             hasObstacle: isObstacle || isHighObstacle,

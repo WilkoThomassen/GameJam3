@@ -24,7 +24,9 @@ class Field extends PositionComponent with RiverpodComponentMixin {
     anchor = Anchor.center;
 
     fieldPaint = Paint()
-      ..color = ColorTheme.fieldColorBoring
+      ..color = fieldConfig.isFinish
+          ? ColorTheme.fieldColorFinish
+          : ColorTheme.fieldColorBoring
       ..style = PaintingStyle.fill;
     fieldPaint.darken(fieldConfig.darkness);
     groundPaint = Paint()

@@ -7,7 +7,7 @@ class ColorTheme {
 
   static Color fieldColorIce = const Color.fromARGB(255, 125, 229, 255);
   static Color flame = Color.fromARGB(255, 255, 117, 11);
-  static Color fieldColorGrass = const Color.fromARGB(255, 169, 255, 77);
+  static Color fieldColorFinish = const Color.fromARGB(255, 169, 255, 77);
   static Color fieldColorBoring = Color.fromARGB(255, 180, 183, 177);
   static Color fieldColorSelected = Color.fromARGB(255, 103, 16, 103);
   static Color fieldColorHovered = Color.fromARGB(255, 248, 55, 248);
