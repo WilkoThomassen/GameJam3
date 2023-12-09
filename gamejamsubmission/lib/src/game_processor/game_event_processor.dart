@@ -87,6 +87,14 @@ class GameEventProcessor {
         .moveFreeze(freezeToJump, freezeToJump.locationFieldId, targetFieldId);
   }
 
+  void flameDefeated() {
+    print('FLAME IS DEFEATED');
+  }
+
+  void flameFinished() {
+    print('FLAME IS FINISHED');
+  }
+
   void quitGame() {
     throw UnimplementedError();
   }

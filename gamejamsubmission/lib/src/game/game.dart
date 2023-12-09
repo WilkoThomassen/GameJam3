@@ -149,6 +149,10 @@ class BakiTakiGame extends FlameGame
     // get field on the left
     Field targetField = FieldHelper.getFieldComponentByFieldId(targetFieldId);
 
+    if (targetField.fieldConfig.isFinish) {
+      GameEventProcessor().flameFinished();
+    }
+
     gameRef.playerFlame!.bakiLayout.priority = targetField.fieldConfig.fieldId +
         GraphicsConstants.drawLayerPriorityTreshold;
 

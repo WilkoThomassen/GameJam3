@@ -4,6 +4,7 @@ import 'package:gamejamsubmission/src/game/models/player.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
+import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 import 'dart:ui';
 
 import '../graphics/color_theme.dart';
@@ -177,6 +178,7 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
         body.color == ColorTheme.flame) {
       body.color = ColorTheme.frozen;
       defeated = true;
+      GameEventProcessor().flameDefeated();
       _setShader();
     }
   }
