@@ -162,8 +162,8 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     final freezeSize = game.level.fieldSize / 2.5;
 
     // create flame to spawn
-    final freezeData =
-        BakiGenerator().generate(freezeSize, color: ColorTheme.freeze);
+    final freezeData = BakiGenerator()
+        .generate(freezeSize, color: ColorTheme.freeze, isShady: true);
     final freezePlayer = BakiLayout(freezeData);
 
     final preparedFreeze = Baki(
@@ -213,6 +213,8 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     final field = FieldHelper.getFieldComponentByFieldId(targetFieldId);
     final targetPosition = game.getLocationByFieldSituation(
         fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
+    freeze.bakiLayout.priority =
+        field.fieldConfig.fieldId + GraphicsConstants.drawLayerPriorityTreshold;
     freeze.bakiLayout.jumpTo(targetPosition);
   }
 
