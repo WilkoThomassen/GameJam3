@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flame/input.dart';
+import 'package:flame/palette.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,9 @@ class BakiTakiGame extends FlameGame
   late Vector2 gameSize;
   WidgetRef? ref;
   Baki? playerFlame;
+
+  final regularText = TextPaint(
+      style: TextStyle(color: ColorTheme.fieldColorBoring, fontSize: 80));
 
   late AudioPool pool;
 
@@ -66,6 +70,11 @@ class BakiTakiGame extends FlameGame
     // clear field before (re)drawing the game
     removeAll(children.whereType<Field>());
     removeAll(children.whereType<BakiLayout>());
+    removeAll(children.whereType<TextComponent>());
+
+    // add level nr
+    add(TextComponent(text: game.gameId.toString(), textRenderer: regularText)
+      ..position = Vector2(50, 50));
 
     // define position of the first field
     Vector2 basePosition = Vector2(game.level.fieldSize * 0.7, size.y * 0.5);

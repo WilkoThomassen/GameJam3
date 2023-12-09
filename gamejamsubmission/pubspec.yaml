@@ -12,7 +12,6 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   flame: ^1.11.0
-  background_patterns: ^0.0.9
   riverpod: ^2.3.1
   flutter_riverpod: ^2.3.1    
   flame_riverpod: ^5.0.0
