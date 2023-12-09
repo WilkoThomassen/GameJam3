@@ -64,6 +64,12 @@ class GameNotifier extends StateNotifier<BakiGame?> {
   }
 
   void endGame(GameState status) {
+    _clear();
     state = gameState.instanceWith(gameState: status);
+  }
+
+  void _clear() {
+    final updatedSituation = SituationProcessor.clear();
+    state = gameState.instanceWith(situation: updatedSituation);
   }
 }

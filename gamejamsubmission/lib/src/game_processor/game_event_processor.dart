@@ -61,6 +61,7 @@ class GameEventProcessor {
   }
 
   void spawnFreeze() {
+    print('SPAWN');
     // spawn
     final placeResult = gameRef.spawnFreeze();
     // manage it in game state
@@ -90,11 +91,9 @@ class GameEventProcessor {
   void flameDefeated() {
     // give it a couple a seconds to display defeated transformation of the
     // flame player and then stop the game
-    Future.delayed(
-        const Duration(seconds: 2),
-        () => globalScope
-            .read(gameProvider.notifier)
-            .endGame(GameState.defeated));
+    Future.delayed(const Duration(seconds: 2), () {
+      globalScope.read(gameProvider.notifier).endGame(GameState.defeated);
+    });
   }
 
   void flameFinished() {

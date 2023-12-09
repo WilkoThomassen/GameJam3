@@ -10,6 +10,18 @@ import '../state/game_provider.dart';
 import 'field_processor.dart';
 
 class SituationProcessor {
+  static Situation clear() {
+    final game = globalScope.read(gameProvider)!;
+    final situationFields = game.situation.fields;
+    for (var situationField
+        in globalScope.read(gameProvider)!.situation.fields) {
+      situationField.bakis.clear();
+      // update situationfield
+      _persistSituationField(situationField);
+    }
+    return game.situation.instanceWith(fields: situationFields);
+  }
+
   // TODO: get game from provider
   static Situation placePlayerOnField(Baki baki, int fieldId) {
     final game = globalScope.read(gameProvider)!;

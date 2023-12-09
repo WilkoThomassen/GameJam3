@@ -18,16 +18,41 @@ class FlameFrostyApp extends ConsumerStatefulWidget {
   FlameFrostAppState createState() => FlameFrostAppState();
 }
 
-class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
+class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation<double> animation;
   LevelDefinition get currentLevel => Levels.levels[currentLevelIndex];
   int currentLevelIndex = 0;
   GameState gameState = GameState.idle;
 
+  bool _cancelSpawning = false;
+
   @override
   void initState() {
+    controller =
+        AnimationController(duration: const Duration(seconds: 3), vsync: this);
+    animation = Tween<double>(begin: 0.2, end: 0.5).animate(
+        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn));
+
+    controller.addListener(() {
+      ref.read(gameConfigProvider.notifier).setPerspective(animation.value);
+
+      if (controller.isCompleted) {
+        _cancelSpawning = false;
+        // once the game is drawn, the flame can be placed
+        gameEventProcessor.placeFlameOnField();
+        _startSpawningFrosties();
+      }
+    });
+
     globalScope.listen(gameProvider, (previous, next) {
       if (previous != null && next != null) {
         if (previous.gameState != next.gameState) {
+          if (next.gameState == GameState.finished ||
+              next.gameState == GameState.defeated) {
+            _cancelSpawning = true;
+          }
           setState(() {
             gameState = next.gameState;
           });
@@ -155,20 +180,23 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
       gameState = GameState.started;
     });
 
-    Future.delayed(const Duration(seconds: 1), () {
-      gameEventProcessor.placeFlameOnField();
-      _startSpawningFrosties();
-    });
+    // set animation here
+    controller.reset();
+
+    controller.forward();
   }
 
   Future _startSpawningFrosties() async {
+    // TODO: find a way to cancel this when game is over
     for (int index = 1; index <= currentLevel.frosties; index++) {
+      if (_cancelSpawning) break;
       await Future.delayed(const Duration(milliseconds: 1000), () async {
+        if (_cancelSpawning) return;
         // introduce new freeze to the board
         gameEventProcessor.prepareFreeze();
-
         await Future.delayed(const Duration(milliseconds: 500), () {
           // spawn it
+          if (_cancelSpawning) return;
           gameEventProcessor.spawnFreeze();
         });
       });
