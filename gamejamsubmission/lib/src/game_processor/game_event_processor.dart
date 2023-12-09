@@ -41,6 +41,9 @@ class GameEventProcessor {
   }
 
   void jumpFlame(GameInput input) {
+    if (globalScope.read(gameProvider)!.situation.flameOnFieldId == null) {
+      return;
+    }
     final playerPositionFieldId =
         globalScope.read(gameProvider)!.situation.flameOnFieldId!;
     final surrFields =
