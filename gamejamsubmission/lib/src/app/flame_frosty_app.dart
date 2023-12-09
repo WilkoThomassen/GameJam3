@@ -2,9 +2,11 @@ import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gamejamsubmission/src/app/level.dart';
+import 'package:gamejamsubmission/src/game/models/game.dart';
 import 'package:gamejamsubmission/src/game_config/state/game_config_provider.dart';
 
 import '../../main.dart';
+import '../game/game_exports.dart';
 import '../game/graphics/color_theme.dart';
 import '../game/models/level.dart';
 import 'levels.dart';
@@ -17,13 +19,26 @@ class FlameFrostyApp extends ConsumerStatefulWidget {
 }
 
 class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
-  late LevelDefinition currentLevel;
+  LevelDefinition get currentLevel => Levels.levels[currentLevelIndex];
   int currentLevelIndex = 0;
-  bool isStarted = false;
+  GameState gameState = GameState.idle;
 
   @override
   void initState() {
-    currentLevel = Levels.levels[currentLevelIndex];
+    globalScope.listen(gameProvider, (previous, next) {
+      if (previous != null && next != null) {
+        if (previous.gameState != next.gameState) {
+          setState(() {
+            gameState = next.gameState;
+          });
+          if (next.gameState == GameState.finished) {
+            // level finished, next one
+            currentLevelIndex++;
+            _startGame();
+          }
+        }
+      }
+    });
 
     super.initState();
   }
@@ -31,6 +46,8 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
 // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //final status = ref.watch(gameProvider);
+
     return MaterialApp(
         title: 'Flame vs Frosties',
         theme: ThemeData(
@@ -40,7 +57,13 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
             colorScheme: ColorScheme.dark(
                 primary: ColorTheme.freeze, secondary: ColorTheme.flame)),
         home: Scaffold(
-          body: isStarted ? LevelArena() : _startScreen(),
+          body: gameState == GameState.started
+              ? LevelArena()
+              : gameState == GameState.idle
+                  ? _startScreen()
+                  : gameState == GameState.defeated
+                      ? _defeatedScreen()
+                      : Container(),
         ));
   }
 
@@ -65,28 +88,60 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
                 hoverColor: ColorTheme.bakiPlayerOne,
                 iconSize: 150,
                 onPressed: () {
-                  setState(() {
-                    // set config based on level
-                    ref
-                        .read(gameConfigProvider.notifier)
-                        .setGridSize(currentLevel.gridSize);
-
-                    gameEventProcessor.createGame();
-                    gameEventProcessor.startGame();
-                    gameRef.initialize(ref);
-
-                    Future.delayed(const Duration(seconds: 1), () {
-                      gameEventProcessor.placeFlameOnField();
-                      _startSpawningFrosties();
-                    });
-
-                    isStarted = true;
-                  });
+                  _startGame();
                 },
               )),
         )
       ]),
     );
+  }
+
+  Widget _defeatedScreen() {
+    return Container(
+      color: ColorTheme.appBackground,
+      child: Stack(children: [
+        Align(
+          alignment: Alignment.topCenter,
+          child: Image.asset(
+            'assets/img/appheader.png',
+            width: 500,
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+              padding: EdgeInsets.only(bottom: 150),
+              child: IconButton(
+                icon: const Icon(Icons.replay),
+                color: ColorTheme.buttonForeground,
+                hoverColor: ColorTheme.bakiPlayerOne,
+                iconSize: 150,
+                onPressed: () {
+                  currentLevelIndex = 0;
+                  _startGame();
+                },
+              )),
+        )
+      ]),
+    );
+  }
+
+  void _startGame() {
+    // set config based on level
+    ref.read(gameConfigProvider.notifier).setGridSize(currentLevel.gridSize);
+
+    gameEventProcessor.createGame();
+    gameEventProcessor.startGame();
+    gameRef.initialize(ref);
+
+    Future.delayed(const Duration(seconds: 1), () {
+      gameEventProcessor.placeFlameOnField();
+      _startSpawningFrosties();
+    });
+
+    setState(() {
+      gameState = GameState.started;
+    });
   }
 
   Future _startSpawningFrosties() async {

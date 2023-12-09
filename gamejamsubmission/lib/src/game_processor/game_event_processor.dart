@@ -88,11 +88,11 @@ class GameEventProcessor {
   }
 
   void flameDefeated() {
-    print('FLAME IS DEFEATED');
+    globalScope.read(gameProvider.notifier).endGame(GameState.defeated);
   }
 
   void flameFinished() {
-    print('FLAME IS FINISHED');
+    globalScope.read(gameProvider.notifier).endGame(GameState.finished);
   }
 
   void quitGame() {

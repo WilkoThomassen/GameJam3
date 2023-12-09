@@ -28,6 +28,7 @@ class GameNotifier extends StateNotifier<BakiGame?> {
         gameId: state != null ? gameState.gameId + 1 : 1,
         players: players,
         level: playLevel,
+        gameState: GameState.started,
         situation:
             Situation(turnPlayer: players.first, fields: situationFields));
   }
@@ -60,5 +61,9 @@ class GameNotifier extends StateNotifier<BakiGame?> {
     state = gameState.instanceWith(
         situation:
             gameState.situation.instanceWith(flameOnFieldId: targetFieldId));
+  }
+
+  void endGame(GameState status) {
+    state = gameState.instanceWith(gameState: status);
   }
 }
