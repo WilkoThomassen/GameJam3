@@ -20,6 +20,8 @@ class BakiLayout extends PositionComponent {
   late Offset leftIrisLookUpOffset;
   late Offset rightIrisLookUpOffset;
 
+  bool toLeft = true;
+
   final int explodeAnimationDurationMs = 500;
 
   BakiLayout(this.bakiData)
@@ -80,6 +82,11 @@ class BakiLayout extends PositionComponent {
     // move this shit to extensions and preload paths for performance?
 
     //Path jumpToNeighborPath = Path()..moveTo(position.x, position.y);
+    if (targetPosition.x > position.x && toLeft == true ||
+        targetPosition.x < position.x && toLeft == false) {
+      flipHorizontally();
+      toLeft = !toLeft;
+    }
 
     Path jumpToNeighborPath = Path()..moveTo(0, 0);
 
