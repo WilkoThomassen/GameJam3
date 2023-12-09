@@ -19,11 +19,27 @@ class SituationProcessor {
     situationField.bakis.add(baki);
 
     // update situationfield
-    _replaceSituationField(situationFields, situationField);
+    _persistSituationField(situationField);
 
     // return updated situation field and new turn in game
     return game.situation
         .instanceWith(fields: situationFields, playerOnFieldId: fieldId);
+  }
+
+  static Situation moveFreeze(
+      Baki freeze, int originFieldId, int targetFieldId) {
+    final game = globalScope.read(gameProvider)!;
+    final situationFields = game.situation.fields;
+
+    final originFieldSituation = game.getSituationFieldById(originFieldId);
+    final targetFieldSituation = game.getSituationFieldById(targetFieldId);
+
+    originFieldSituation.bakis.remove(freeze);
+    targetFieldSituation.bakis.add(freeze);
+    _persistSituationField(originFieldSituation);
+    _persistSituationField(targetFieldSituation);
+
+    return game.situation.instanceWith(fields: situationFields);
   }
 
   // static Situation explode(int fieldId) {
@@ -92,8 +108,9 @@ class SituationProcessor {
   //   return game.situation.instanceWith(fields: situationFields);
   // }
 
-  static void _replaceSituationField(
-      List<SituationField> situationFields, SituationField newSituationField) {
+  static void _persistSituationField(SituationField newSituationField) {
+    final situationFields = globalScope.read(gameProvider)!.situation.fields;
+
     // replace situationField
     final indexOfField = situationFields
         .indexWhere((f) => f.field.fieldId == newSituationField.field.fieldId);

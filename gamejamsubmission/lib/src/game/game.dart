@@ -156,7 +156,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
         fieldId: targetField.fieldConfig.fieldId));
   }
 
-  PlacementResult prepareFreeze() {
+  void prepareFreeze() {
     final freezeSize = game.level.fieldSize / 2.5;
 
     // create flame to spawn
@@ -176,11 +176,14 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
       ..x += startPositionOffset
       ..y -= startPositionOffset);
 
-    // todo: find another solution for this dummy (actual dead code)
-    return PlacementResult(placedBaki: preparedFreeze!, fieldId: 1);
+    freezePlayer.onJumpCompleted = () {
+      Future.delayed(const Duration(seconds: 1),
+          () => GameEventProcessor().jumpFreeze(preparedFreeze!));
+    };
   }
 
-  void spawnFreeze() {
+  PlacementResult spawnFreeze() {
+    int resultFieldId = 0;
     for (final field in fields.toList()) {
       if (!field.fieldConfig.hasObstacle &&
           !field.fieldConfig.hasHighObstacle &&
@@ -190,9 +193,19 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
         preparedFreeze?.bakiLayout.priority = field.fieldConfig.fieldId +
             GraphicsConstants.drawLayerPriorityTreshold;
         preparedFreeze?.bakiLayout.jumpTo(targetPosition);
+        resultFieldId = field.fieldConfig.fieldId;
         break;
       }
     }
+
+    return PlacementResult(placedBaki: preparedFreeze!, fieldId: resultFieldId);
+  }
+
+  void jumpFreeze(int targetFieldId, Baki freeze) {
+    final field = FieldHelper.getFieldComponentByFieldId(targetFieldId);
+    final targetPosition = game.getLocationByFieldSituation(
+        fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
+    freeze.bakiLayout.jumpTo(targetPosition);
   }
 
   @override

@@ -3,7 +3,10 @@ import 'package:gamejamsubmission/src/game/models/player.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
+import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 import 'dart:ui';
+
+import '../graphics/color_theme.dart';
 
 class BakiLayout extends PositionComponent {
   final BakiData bakiData;
@@ -19,6 +22,8 @@ class BakiLayout extends PositionComponent {
   late Offset rightIrisOffset;
   late Offset leftIrisLookUpOffset;
   late Offset rightIrisLookUpOffset;
+
+  VoidCallback? onJumpCompleted;
 
   bool toLeft = true;
 
@@ -74,7 +79,6 @@ class BakiLayout extends PositionComponent {
     );
   }
 
-  // move to bakiLayout extension
   void jumpTo(Vector2 targetPosition) {
     // draw path (temp code)
     // see move along path effects: https://github.com/flame-engine/flame/blob/main/examples/lib/stories/effects/move_effect_example.dart
@@ -101,7 +105,11 @@ class BakiLayout extends PositionComponent {
         largeArc: true,
         clockwise: targetPosition.x > position.x);
 
-    add(MoveAlongPathEffect(
+    add(MoveAlongPathEffect(onComplete: () {
+      if (onJumpCompleted != null) {
+        onJumpCompleted!();
+      }
+    },
         jumpToNeighborPath,
         EffectController(
             curve: Curves.fastEaseInToSlowEaseOut, duration: 0.4)));

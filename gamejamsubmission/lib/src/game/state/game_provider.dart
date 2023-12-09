@@ -32,11 +32,24 @@ class GameNotifier extends StateNotifier<BakiGame?> {
             Situation(turnPlayer: players.first, fields: situationFields));
   }
 
-  void placeFlameOnField(Baki flame, int fieldId) {
+  void placePlayerOnField(Baki player, int fieldId) {
     // place the baki on the field
     final updatedSituation =
-        SituationProcessor.placeBakiOnField(flame, fieldId);
+        SituationProcessor.placeBakiOnField(player, fieldId);
+
+    // make player know on what field it is
+    player.locationFieldId = fieldId;
     // update situation state
+    state = gameState.instanceWith(situation: updatedSituation);
+  }
+
+  void moveFreeze(Baki freeze, int originFieldId, int targetFieldId) {
+    // move freeze from one field to another
+    final updatedSituation =
+        SituationProcessor.moveFreeze(freeze, originFieldId, targetFieldId);
+
+    freeze.locationFieldId = targetFieldId;
+
     state = gameState.instanceWith(situation: updatedSituation);
   }
 

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:gamejamsubmission/main.dart';
 import 'package:gamejamsubmission/src/game/models/field.dart';
 import 'package:gamejamsubmission/src/game/models/gameplay/game_input.dart';
@@ -34,7 +36,7 @@ class GameEventProcessor {
     // manage it in game state
     globalScope
         .read(gameProvider.notifier)
-        .placeFlameOnField(placeResult.placedBaki, placeResult.fieldId);
+        .placePlayerOnField(placeResult.placedBaki, placeResult.fieldId);
   }
 
   void jumpFlame(GameInput input) {
@@ -55,11 +57,33 @@ class GameEventProcessor {
 
   void prepareFreeze() {
     gameRef.prepareFreeze();
-    Future.delayed(const Duration(seconds: 1), () => spawnFreeze());
+    Future.delayed(const Duration(seconds: 2), () => spawnFreeze());
   }
 
   void spawnFreeze() {
-    gameRef.spawnFreeze();
+    // spawn
+    final placeResult = gameRef.spawnFreeze();
+    // manage it in game state
+    globalScope
+        .read(gameProvider.notifier)
+        .placePlayerOnField(placeResult.placedBaki, placeResult.fieldId);
+  }
+
+  void jumpFreeze(Baki freezeToJump) {
+    final surrFields = FieldProcessor.getAvailableSurroundingFieldIds(
+        freezeToJump.locationFieldId);
+    surrFields.sort();
+
+    // jump to one of the highest fieldIds, that is most likely to the
+    // bottom of the field
+    int random = Random().nextInt(2);
+    final targetFieldId = surrFields[random];
+
+    gameRef.jumpFreeze(targetFieldId, freezeToJump);
+    // manage it in game state
+    globalScope
+        .read(gameProvider.notifier)
+        .moveFreeze(freezeToJump, freezeToJump.locationFieldId, targetFieldId);
   }
 
   void quitGame() {

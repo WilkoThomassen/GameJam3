@@ -9,4 +9,6 @@ class Baki {
   Player fromPlayer;
   final bool isAnimating;
   final BakiLayout bakiLayout;
+
+  int locationFieldId = 0;
 }
