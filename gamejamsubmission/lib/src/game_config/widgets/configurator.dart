@@ -148,9 +148,24 @@ class ConfiguratorState extends ConsumerState<Configurator>
                           width: 10,
                         ),
                         Button(
-                          onPressed: () {
+                          onPressed: () async {
                             gameEventProcessor.placeFlameOnField();
-                            gameEventProcessor.prepareFreeze();
+
+                            // gameEventProcessor.prepareFreeze();
+                            // spawn 3 freezes
+                            for (int index = 1; index <= 5; index++) {
+                              await Future.delayed(
+                                  const Duration(milliseconds: 2000), () async {
+                                // introduce new freeze to the board
+                                gameEventProcessor.prepareFreeze();
+
+                                await Future.delayed(
+                                    const Duration(milliseconds: 1000), () {
+                                  // spawn it
+                                  gameEventProcessor.spawnFreeze();
+                                });
+                              });
+                            }
                           },
                           text: 'Just start',
                         ),

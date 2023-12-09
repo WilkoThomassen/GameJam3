@@ -28,7 +28,8 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
   late Vector2 gameSize;
   WidgetRef? ref;
   Baki? playerFlame;
-  Baki? preparedFreeze;
+
+  List<Baki> freezes = [];
 
   Iterable<Field> get fields => children.whereType<Field>();
 
@@ -165,25 +166,30 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
         BakiGenerator().generate(freezeSize, color: ColorTheme.freeze);
     final freezePlayer = BakiLayout(freezeData);
 
-    preparedFreeze = Baki(
+    final preparedFreeze = Baki(
         isFlame: false,
         fromPlayer:
             Player(id: 'freeze', name: 'freeze', color: ColorTheme.freeze),
         bakiLayout: freezePlayer);
 
+    freezes.insert(0, preparedFreeze);
+
     final startPositionOffset = game.level.fieldSize * 1.1;
 
-    add(preparedFreeze!.bakiLayout
+    add(preparedFreeze.bakiLayout
       ..position = fields.first.position
       ..x += startPositionOffset
       ..y -= startPositionOffset);
 
     freezePlayer.onJumpCompleted = () {
-      Future.delayed(const Duration(milliseconds: 500),
-          () => GameEventProcessor().jumpFreeze(preparedFreeze!));
+      Future.delayed(const Duration(milliseconds: 500), () {
+        // let the freeze jump and also spawn a new one
+        GameEventProcessor().jumpFreeze(preparedFreeze!);
+      });
     };
   }
 
+  /// spawns the latest freezes
   PlacementResult spawnFreeze() {
     int resultFieldId = 0;
     for (final field in fields.toList()) {
@@ -192,15 +198,15 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
           !field.fieldConfig.isFinish) {
         final targetPosition = game.getLocationByFieldSituation(
             fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
-        preparedFreeze?.bakiLayout.priority = field.fieldConfig.fieldId +
+        freezes.first.bakiLayout.priority = field.fieldConfig.fieldId +
             GraphicsConstants.drawLayerPriorityTreshold;
-        preparedFreeze?.bakiLayout.jumpTo(targetPosition);
+        freezes.first.bakiLayout.jumpTo(targetPosition);
         resultFieldId = field.fieldConfig.fieldId;
         break;
       }
     }
 
-    return PlacementResult(placedBaki: preparedFreeze!, fieldId: resultFieldId);
+    return PlacementResult(placedBaki: freezes.first, fieldId: resultFieldId);
   }
 
   void jumpFreeze(int targetFieldId, Baki freeze) {

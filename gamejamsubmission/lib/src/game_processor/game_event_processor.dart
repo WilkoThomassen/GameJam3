@@ -58,7 +58,6 @@ class GameEventProcessor {
 
   void prepareFreeze() {
     gameRef.prepareFreeze();
-    Future.delayed(const Duration(seconds: 2), () => spawnFreeze());
   }
 
   void spawnFreeze() {
@@ -78,7 +77,7 @@ class GameEventProcessor {
     // jump to one of the highest fieldIds, that is most likely to the
     // bottom of the field
     int random = Random().nextInt(2);
-    final targetFieldId = surrFields[random];
+    final targetFieldId = surrFields[surrFields.length > 1 ? random : 0];
 
     gameRef.jumpFreeze(targetFieldId, freezeToJump);
     // manage it in game state
