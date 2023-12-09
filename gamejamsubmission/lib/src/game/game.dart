@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flame/input.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -30,6 +31,8 @@ class BakiTakiGame extends FlameGame
   WidgetRef? ref;
   Baki? playerFlame;
 
+  late AudioPool pool;
+
   List<Baki> freezes = [];
 
   BakiTakiGame({super.children, super.world, super.camera});
@@ -46,9 +49,15 @@ class BakiTakiGame extends FlameGame
     });
   }
 
+  void startBgmMusic() {
+    FlameAudio.bgm.initialize();
+    FlameAudio.bgm.play('music/harp.mp3');
+  }
+
   @override
   Future<void> onLoad() async {
     _drawGame();
+    startBgmMusic();
   }
 
   void _drawGame() {
@@ -150,6 +159,7 @@ class BakiTakiGame extends FlameGame
   }
 
   void jumpTo(GameInput direction, int targetFieldId) {
+    FlameAudio.play('sfx/jump.mp3');
     // get field on the left
     Field targetField = FieldHelper.getFieldComponentByFieldId(targetFieldId);
 
@@ -238,23 +248,6 @@ class BakiTakiGame extends FlameGame
 
     return KeyEventResult.handled;
   }
-
-  // void explode(FieldConfig field, List<BakiLayout> fieldBakis) {
-  //   for (var baki in fieldBakis.take(4)) {
-  //     // get the position of the field on the side of the direction
-  //     Field targetField = FieldHelper.getNeighboringField(
-  //         field.fieldId, fieldBakis.indexOf(baki));
-
-  //     final targetPosition = game.getLocationByFieldSituation(
-  //         fieldPosition: targetField.position,
-  //         fieldId: targetField.fieldConfig.fieldId);
-
-  //     baki.priority = targetField.fieldConfig.fieldId +
-  //         GraphicsConstants.drawLayerPriorityTreshold +
-  //         2;
-  //     baki.animateExplodeTo(targetPosition);
-  //   }
-  // }
 
   Vector2 _getFieldPosition(int row, int column, double size,
       Vector2 basePosition, bool hasObstacle, double perspective) {
