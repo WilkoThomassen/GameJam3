@@ -42,7 +42,6 @@ extension GameExtension on BakiGame {
 
     final centerOffset = level.fieldSize * 0.15;
     var bakiXPosition = fieldPosition.x - (level.fieldSize / 2);
-    ;
 
     var bakiYPosition = fieldPosition.y - (level.fieldSize / 1.5);
 

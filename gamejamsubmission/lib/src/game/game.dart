@@ -1,6 +1,9 @@
 import 'dart:developer';
 
+import 'package:flame/input.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:gamejamsubmission/src/game/components/baki_layout.dart';
 import 'package:gamejamsubmission/src/game/components/components.dart';
 import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
@@ -12,16 +15,19 @@ import 'package:gamejamsubmission/main.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 
 import '../game_config/config.dart';
 import 'graphics/graphics.dart';
 import 'graphics/graphics_constants.dart';
+import 'models/gameplay/game_input.dart';
 
-class BakiTakiGame extends FlameGame with RiverpodGameMixin {
+class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
   late GameConfig config;
   late BakiGame game;
   late Vector2 gameSize;
   WidgetRef? ref;
+  Baki? playerFlame;
 
   Iterable<Field> get fields => children.whereType<Field>();
 
@@ -88,9 +94,6 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin {
       }
     });
 
-    // once the game is drawn, the flame can be placed
-    gameEventProcessor.placeFlameOnField();
-
     if (config.showDebugInfo) {
       add(FpsTextComponent(position: Vector2(size.x - 100, size.y - 24)));
     }
@@ -104,7 +107,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin {
         BakiGenerator().generate(flameSize, color: ColorTheme.flame);
     final flamePlayer = BakiLayout(flameData);
 
-    final Baki flame = Baki(
+    playerFlame = Baki(
         fromPlayer:
             Player(id: 'freeze', name: 'freeze', color: ColorTheme.flame),
         bakiLayout: flamePlayer);
@@ -113,35 +116,76 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin {
     for (final field in fields.toList().reversed) {
       if (!field.fieldConfig.hasObstacle &&
           !field.fieldConfig.hasHighObstacle) {
-        add(flame.bakiLayout
+        add(playerFlame!.bakiLayout
           ..position = game.getLocationByFieldSituation(
               fieldPosition: field.position, fieldId: field.fieldConfig.fieldId)
           ..priority = field.fieldConfig.fieldId +
               GraphicsConstants.drawLayerPriorityTreshold);
         return PlacementResult(
-            placedBaki: flame, fieldId: field.fieldConfig.fieldId);
+            placedBaki: playerFlame!, fieldId: field.fieldConfig.fieldId);
       }
     }
     // todo: find another solution for this dummy (actual dead code)
-    return PlacementResult(placedBaki: flame, fieldId: 1);
+    return PlacementResult(placedBaki: playerFlame!, fieldId: 1);
   }
 
-  void explode(FieldConfig field, List<BakiLayout> fieldBakis) {
-    for (var baki in fieldBakis.take(4)) {
-      // get the position of the field on the side of the direction
-      Field targetField = FieldHelper.getNeighboringField(
-          field.fieldId, fieldBakis.indexOf(baki));
-
-      final targetPosition = game.getLocationByFieldSituation(
-          fieldPosition: targetField.position,
-          fieldId: targetField.fieldConfig.fieldId);
-
-      baki.priority = targetField.fieldConfig.fieldId +
-          GraphicsConstants.drawLayerPriorityTreshold +
-          2;
-      baki.animateExplodeTo(targetPosition);
+  GameInput getInput(Set<LogicalKeyboardKey> keysPressed) {
+    if (keysPressed.contains(LogicalKeyboardKey.space)) return GameInput.action;
+    if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) return GameInput.up;
+    if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+      return GameInput.down;
     }
+    if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+      return GameInput.left;
+    }
+    if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+      return GameInput.right;
+    }
+    return GameInput.none;
   }
+
+  void jumpTo(GameInput direction, int targetFieldId) {
+    // get field on the left
+    Field targetField = FieldHelper.getFieldComponentByFieldId(targetFieldId);
+
+    gameRef.playerFlame!.bakiLayout.priority = targetField.fieldConfig.fieldId +
+        GraphicsConstants.drawLayerPriorityTreshold;
+
+    gameRef.playerFlame!.bakiLayout.jumpTo(game.getLocationByFieldSituation(
+        fieldPosition: targetField.position,
+        fieldId: targetField.fieldConfig.fieldId));
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+    RawKeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    if (event is RawKeyDownEvent) {
+      final input = getInput(keysPressed);
+
+      GameEventProcessor().jumpFlame(input);
+    }
+
+    return KeyEventResult.handled;
+  }
+
+  // void explode(FieldConfig field, List<BakiLayout> fieldBakis) {
+  //   for (var baki in fieldBakis.take(4)) {
+  //     // get the position of the field on the side of the direction
+  //     Field targetField = FieldHelper.getNeighboringField(
+  //         field.fieldId, fieldBakis.indexOf(baki));
+
+  //     final targetPosition = game.getLocationByFieldSituation(
+  //         fieldPosition: targetField.position,
+  //         fieldId: targetField.fieldConfig.fieldId);
+
+  //     baki.priority = targetField.fieldConfig.fieldId +
+  //         GraphicsConstants.drawLayerPriorityTreshold +
+  //         2;
+  //     baki.animateExplodeTo(targetPosition);
+  //   }
+  // }
 
   Vector2 _getFieldPosition(int row, int column, double size,
       Vector2 basePosition, bool hasObstacle, double perspective) {

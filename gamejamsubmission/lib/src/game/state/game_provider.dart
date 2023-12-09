@@ -1,3 +1,4 @@
+import 'package:gamejamsubmission/src/game/models/gameplay/game_input.dart';
 import 'package:gamejamsubmission/src/game_config/config.dart';
 import 'package:gamejamsubmission/src/game/generators/generators.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
@@ -37,5 +38,12 @@ class GameNotifier extends StateNotifier<BakiGame?> {
         SituationProcessor.placeBakiOnField(flame, fieldId);
     // update situation state
     state = gameState.instanceWith(situation: updatedSituation);
+  }
+
+  void moveFlame(int targetFieldId) {
+    // update situation state
+    state = gameState.instanceWith(
+        situation:
+            gameState.situation.instanceWith(playerOnFieldId: targetFieldId));
   }
 }

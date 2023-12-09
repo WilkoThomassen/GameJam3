@@ -73,7 +73,7 @@ class BakiLayout extends PositionComponent {
   }
 
   // move to bakiLayout extension
-  void animateExplodeTo(Vector2 targetPosition) {
+  void jumpTo(Vector2 targetPosition) {
     // draw path (temp code)
     // see move along path effects: https://github.com/flame-engine/flame/blob/main/examples/lib/stories/effects/move_effect_example.dart
 

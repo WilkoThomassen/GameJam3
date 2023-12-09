@@ -133,10 +133,24 @@ class ConfiguratorState extends ConsumerState<Configurator>
                               ref
                                   .read(gameConfigProvider.notifier)
                                   .setPerspective(animation.value);
+
+                              if (controller.isCompleted) {
+                                // once the game is drawn, the flame can be placed
+                                gameEventProcessor.placeFlameOnField();
+                              }
                             });
                             controller.forward();
                           },
-                          text: 'Start animation',
+                          text: 'Start game',
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Button(
+                          onPressed: () {
+                            gameEventProcessor.placeFlameOnField();
+                          },
+                          text: 'Just start',
                         ),
                       ],
                     )

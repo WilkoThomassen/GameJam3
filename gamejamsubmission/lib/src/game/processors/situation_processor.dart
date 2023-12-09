@@ -22,9 +22,8 @@ class SituationProcessor {
     _replaceSituationField(situationFields, situationField);
 
     // return updated situation field and new turn in game
-    return game.situation.instanceWith(
-      fields: situationFields,
-    );
+    return game.situation
+        .instanceWith(fields: situationFields, playerOnFieldId: fieldId);
   }
 
   // static Situation explode(int fieldId) {
