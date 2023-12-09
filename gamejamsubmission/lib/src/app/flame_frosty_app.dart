@@ -79,6 +79,27 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
           ),
         ),
         Align(
+          alignment: Alignment.centerLeft,
+          child: Image.asset(
+            'assets/img/flame.png',
+            width: 500,
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Image.asset(
+            'assets/img/frosty.png',
+            width: 500,
+          ),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: Image.asset(
+            'assets/img/defeated.png',
+            width: 500,
+          ),
+        ),
+        Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
               padding: EdgeInsets.only(bottom: 150),
@@ -98,13 +119,13 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
 
   Widget _defeatedScreen() {
     return Container(
-      color: ColorTheme.appBackground,
+      color: ColorTheme.fieldColorGround,
       child: Stack(children: [
         Align(
           alignment: Alignment.topCenter,
           child: Image.asset(
-            'assets/img/appheader.png',
-            width: 500,
+            'assets/img/defeated.png',
+            width: 600,
           ),
         ),
         Align(
@@ -115,7 +136,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp> {
                 icon: const Icon(Icons.replay),
                 color: ColorTheme.buttonForeground,
                 hoverColor: ColorTheme.bakiPlayerOne,
-                iconSize: 150,
+                iconSize: 200,
                 onPressed: () {
                   currentLevelIndex = 0;
                   _startGame();
