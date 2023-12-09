@@ -32,6 +32,8 @@ class BakiTakiGame extends FlameGame
 
   List<Baki> freezes = [];
 
+  BakiTakiGame({super.children, super.world, super.camera});
+
   Iterable<Field> get fields => children.whereType<Field>();
 
   void initialize(WidgetRef widgetRef) {

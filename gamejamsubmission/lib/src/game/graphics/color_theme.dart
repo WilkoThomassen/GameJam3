@@ -11,12 +11,12 @@ class ColorTheme {
   static Color frozen = const Color.fromARGB(255, 253, 252, 240);
 
   static Color fieldColorFinish = Color.fromARGB(255, 77, 255, 89);
-  // static Color fieldColorBoring = Color.fromARGB(255, 180, 183, 177);
   static Color fieldColorBoring = Color.fromARGB(255, 140, 208, 197);
-  static Color fieldColorSelected = Color.fromARGB(255, 103, 16, 103);
-  static Color fieldColorHovered = Color.fromARGB(255, 248, 55, 248);
-  static Color fieldColorGround = const Color.fromARGB(255, 219, 148, 49);
+  static Color fieldColorGround = Color.fromARGB(255, 232, 168, 80);
   static Color fieldColorObstacle = const Color.fromARGB(255, 254, 241, 224);
+
+  static Color appBackground = Color.fromARGB(255, 218, 249, 255);
+  static Color buttonForeground = Color.fromARGB(255, 9, 39, 63);
 
   static Color get bakiPlayerOne => const Color.fromARGB(255, 55, 164, 248);
   static Color get bakiPlayerTwo => const Color.fromARGB(255, 248, 181, 55);
