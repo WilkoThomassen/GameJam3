@@ -109,6 +109,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     final flamePlayer = BakiLayout(flameData);
 
     playerFlame = Baki(
+        isFlame: true,
         fromPlayer: Player(id: 'flame', name: 'flame', color: ColorTheme.flame),
         bakiLayout: flamePlayer);
 
@@ -165,6 +166,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
     final freezePlayer = BakiLayout(freezeData);
 
     preparedFreeze = Baki(
+        isFlame: false,
         fromPlayer:
             Player(id: 'freeze', name: 'freeze', color: ColorTheme.freeze),
         bakiLayout: freezePlayer);
@@ -177,7 +179,7 @@ class BakiTakiGame extends FlameGame with RiverpodGameMixin, KeyboardEvents {
       ..y -= startPositionOffset);
 
     freezePlayer.onJumpCompleted = () {
-      Future.delayed(const Duration(seconds: 1),
+      Future.delayed(const Duration(milliseconds: 500),
           () => GameEventProcessor().jumpFreeze(preparedFreeze!));
     };
   }

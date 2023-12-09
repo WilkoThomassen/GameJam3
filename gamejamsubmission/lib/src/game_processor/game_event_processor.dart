@@ -34,6 +34,7 @@ class GameEventProcessor {
     // generate players flame in game
     final placeResult = gameRef.placeFlameOnField();
     // manage it in game state
+
     globalScope
         .read(gameProvider.notifier)
         .placePlayerOnField(placeResult.placedBaki, placeResult.fieldId);
@@ -41,7 +42,7 @@ class GameEventProcessor {
 
   void jumpFlame(GameInput input) {
     final playerPositionFieldId =
-        globalScope.read(gameProvider)!.situation.playerOnFieldId!;
+        globalScope.read(gameProvider)!.situation.flameOnFieldId!;
     final surrFields =
         FieldProcessor.getAvailableSurroundingFieldIds(playerPositionFieldId);
 

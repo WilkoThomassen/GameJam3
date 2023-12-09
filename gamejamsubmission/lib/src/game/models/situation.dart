@@ -6,23 +6,23 @@ class Situation {
   final List<SituationField> fields;
 
   // fields purpose is only to access directly for performance reasons
-  final int? playerOnFieldId;
+  final int? flameOnFieldId;
 
   Situation(
       {this.turns = 1,
       required this.turnPlayer,
       required this.fields,
-      this.playerOnFieldId});
+      this.flameOnFieldId});
 
   Situation instanceWith(
       {int? turns,
       Player? turnPlayer,
       List<SituationField>? fields,
-      int? playerOnFieldId}) {
+      int? flameOnFieldId}) {
     return Situation(
         turns: turns ?? this.turns,
         turnPlayer: turnPlayer ?? this.turnPlayer,
-        playerOnFieldId: playerOnFieldId ?? this.playerOnFieldId,
+        flameOnFieldId: flameOnFieldId ?? this.flameOnFieldId,
         fields: fields ?? this.fields);
   }
 }

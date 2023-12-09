@@ -35,10 +35,12 @@ class GameNotifier extends StateNotifier<BakiGame?> {
   void placePlayerOnField(Baki player, int fieldId) {
     // place the baki on the field
     final updatedSituation =
-        SituationProcessor.placeBakiOnField(player, fieldId);
+        SituationProcessor.placePlayerOnField(player, fieldId);
 
     // make player know on what field it is
+
     player.locationFieldId = fieldId;
+
     // update situation state
     state = gameState.instanceWith(situation: updatedSituation);
   }
@@ -57,6 +59,6 @@ class GameNotifier extends StateNotifier<BakiGame?> {
     // update situation state
     state = gameState.instanceWith(
         situation:
-            gameState.situation.instanceWith(playerOnFieldId: targetFieldId));
+            gameState.situation.instanceWith(flameOnFieldId: targetFieldId));
   }
 }

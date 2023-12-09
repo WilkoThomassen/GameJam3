@@ -11,7 +11,7 @@ import 'field_processor.dart';
 
 class SituationProcessor {
   // TODO: get game from provider
-  static Situation placeBakiOnField(Baki baki, int fieldId) {
+  static Situation placePlayerOnField(Baki baki, int fieldId) {
     final game = globalScope.read(gameProvider)!;
     final situationFields = game.situation.fields;
     final situationField = game.getSituationFieldById(fieldId);
@@ -22,8 +22,8 @@ class SituationProcessor {
     _persistSituationField(situationField);
 
     // return updated situation field and new turn in game
-    return game.situation
-        .instanceWith(fields: situationFields, playerOnFieldId: fieldId);
+    return game.situation.instanceWith(
+        fields: situationFields, flameOnFieldId: baki.isFlame ? fieldId : null);
   }
 
   static Situation moveFreeze(
