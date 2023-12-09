@@ -97,8 +97,7 @@ class BakiLayout extends PositionComponent {
     add(MoveAlongPathEffect(
         jumpToNeighborPath,
         EffectController(
-            curve: Curves.fastOutSlowIn,
-            duration: explodeAnimationDurationMs / 1000)));
+            curve: Curves.fastEaseInToSlowEaseOut, duration: 0.4)));
   }
 
   void turnToPlayer(Player player) {

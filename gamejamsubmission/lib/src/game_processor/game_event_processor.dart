@@ -48,13 +48,9 @@ class GameEventProcessor {
         FieldHelper.getFieldIdByDirection(input, playerPositionFieldId);
 
     if (surrFields.contains(targetFieldId)) {
-      gameRef.jumpTo(input, targetFieldId);
       globalScope.read(gameProvider.notifier).moveFlame(targetFieldId);
+      gameRef.jumpTo(input, targetFieldId);
     }
-
-    // get available fields by fieldId
-    // see if field is available
-    // jump to the direction
   }
 
   void quitGame() {
