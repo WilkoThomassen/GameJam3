@@ -1,8 +1,6 @@
 import 'package:gamejamsubmission/src/game/models/models.dart';
 import 'package:flame/components.dart';
 
-import '../../game_config/models/game_config.dart';
-
 extension GameExtension on FlameFrostiesGame {
   List<int> getObstacleFieldIndexes() {
     return level.fields

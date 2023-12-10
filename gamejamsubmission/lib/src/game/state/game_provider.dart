@@ -1,10 +1,8 @@
-import 'package:gamejamsubmission/src/game/models/gameplay/game_input.dart';
 import 'package:gamejamsubmission/src/game_config/config.dart';
 import 'package:gamejamsubmission/src/game/generators/generators.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../../../main.dart';
 import '../processors/situation_processor.dart';
 
 final gameProvider = StateNotifierProvider<GameNotifier, FlameFrostiesGame?>(

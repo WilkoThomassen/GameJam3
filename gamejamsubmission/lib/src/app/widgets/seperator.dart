@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class VerticalSeperator extends StatelessWidget {
-  const VerticalSeperator({this.factor = 1});
+  const VerticalSeperator({super.key, this.factor = 1});
 
   final double factor;
   @override
@@ -11,7 +11,7 @@ class VerticalSeperator extends StatelessWidget {
 }
 
 class HorizontalSeperator extends StatelessWidget {
-  const HorizontalSeperator({this.factor = 1});
+  const HorizontalSeperator({super.key, this.factor = 1});
 
   final double factor;
   @override

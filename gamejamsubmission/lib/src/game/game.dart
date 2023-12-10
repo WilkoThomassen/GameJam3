@@ -1,8 +1,6 @@
-import 'dart:developer';
 import 'dart:math';
 
 import 'package:flame/input.dart';
-import 'package:flame/palette.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +20,6 @@ import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 
 import '../game_config/config.dart';
 import 'graphics/graphics.dart';
-import 'graphics/graphics_constants.dart';
 import 'models/gameplay/game_input.dart';
 import 'processors/field_processor.dart';
 
@@ -110,9 +107,6 @@ class FlameFrostyGame extends FlameGame
               basePosition,
               field.fieldConfig.hasObstacle,
               value.perspective);
-
-          // TODO: get flames and freezes on field and reposition as well
-          // TODO: only do this when game is actually started
         }
       }
     });
@@ -214,7 +208,7 @@ class FlameFrostyGame extends FlameGame
     freezePlayer.onJumpCompleted = () {
       Future.delayed(const Duration(milliseconds: 500), () {
         // let the freeze jump and also spawn a new one
-        GameEventProcessor().jumpFreeze(preparedFreeze!);
+        GameEventProcessor().jumpFreeze(preparedFreeze);
       });
     };
   }

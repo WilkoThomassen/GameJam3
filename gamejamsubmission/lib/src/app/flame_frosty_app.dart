@@ -1,4 +1,3 @@
-import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gamejamsubmission/src/app/level.dart';
@@ -8,7 +7,6 @@ import 'package:gamejamsubmission/src/game_config/state/game_config_provider.dar
 import '../../main.dart';
 import '../game/game_exports.dart';
 import '../game/graphics/color_theme.dart';
-import '../game/models/level.dart';
 import 'levels.dart';
 
 class FlameFrostyApp extends ConsumerStatefulWidget {
@@ -74,7 +72,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
     return MaterialApp(
         title: 'Flame vs Frosties',
         theme: ThemeData(
-            textTheme: TextTheme().apply(
+            textTheme: const TextTheme().apply(
                 bodyColor: ColorTheme.freeze, displayColor: ColorTheme.flame),
             primarySwatch: Colors.deepOrange,
             colorScheme: ColorScheme.dark(
@@ -84,7 +82,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
               ? _startScreen()
               : gameState == GameState.defeated
                   ? _defeatedScreen()
-                  : LevelArena(),
+                  : const LevelArena(),
         ));
   }
 
@@ -137,7 +135,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-            padding: EdgeInsets.only(bottom: 40),
+            padding: const EdgeInsets.only(bottom: 40),
             child: Text(
               'Use arrow keys to move around. Go to the green finish plate and avoid Frosties',
               style:
@@ -163,7 +161,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-              padding: EdgeInsets.only(bottom: 80),
+              padding: const EdgeInsets.only(bottom: 80),
               child: IconButton(
                 icon: const Icon(Icons.replay_outlined),
                 color: ColorTheme.buttonForeground,

@@ -1,11 +1,8 @@
-import 'package:gamejamsubmission/src/game/components/character_layout.dart';
 import 'package:gamejamsubmission/src/game/extensions/game_extension.dart';
-import 'package:gamejamsubmission/src/game/generators/generators.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
 
 import '../../../main.dart';
 import '../state/game_provider.dart';
-import 'field_processor.dart';
 
 class SituationProcessor {
   static Situation clear() {

@@ -1,13 +1,9 @@
 import 'dart:math';
 
 import 'package:gamejamsubmission/main.dart';
-import 'package:gamejamsubmission/src/game/models/field.dart';
 import 'package:gamejamsubmission/src/game/models/gameplay/game_input.dart';
-import 'package:gamejamsubmission/src/game/processors/situation_processor.dart';
 
 import '../app/state/app_provider.dart';
-import '../game/components/field.dart';
-import '../game/graphics/graphics.dart';
 import '../game/helpers/field_helper.dart';
 import '../game/models/models.dart';
 import '../game/processors/processors.dart';
@@ -64,7 +60,6 @@ class GameEventProcessor {
   }
 
   void spawnFreeze() {
-    print('SPAWN');
     // spawn
     final placeResult = gameRef.spawnFreeze();
     // manage it in game state

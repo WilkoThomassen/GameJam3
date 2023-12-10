@@ -110,7 +110,7 @@ class CharacterLayout extends PositionComponent with CollisionCallbacks {
 
     // determine curved path to let the character explode to
     jumpToNeighborPath.arcToPoint(targetPositionOffset,
-        radius: Radius.circular(10),
+        radius: const Radius.circular(10),
         rotation: 45,
         largeArc: true,
         clockwise: targetPosition.x > position.x);

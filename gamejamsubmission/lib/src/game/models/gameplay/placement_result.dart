@@ -1,5 +1,3 @@
-import 'package:gamejamsubmission/src/game/models/field.dart';
-
 import '../character.dart';
 
 class PlacementResult {

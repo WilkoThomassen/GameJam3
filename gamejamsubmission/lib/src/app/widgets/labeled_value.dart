@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LabeledValue extends StatelessWidget {
-  const LabeledValue({required this.label, required this.value, this.valueColor});
+  const LabeledValue(
+      {super.key, required this.label, required this.value, this.valueColor});
   final String label;
   final String value;
   final Color? valueColor;

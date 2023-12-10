@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:flame_riverpod/flame_riverpod.dart';
-import 'package:gamejamsubmission/main.dart';
 import 'package:gamejamsubmission/src/game_config/config.dart';
 import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
 import 'package:gamejamsubmission/src/game/graphics/graphics.dart';

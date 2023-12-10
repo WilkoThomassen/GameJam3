@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Button extends StatelessWidget {
   final String text;
   final GestureTapCallback onPressed;
-  const Button({required this.onPressed, required this.text});
+  const Button({super.key, required this.onPressed, required this.text});
 
   @override
   Widget build(BuildContext context) {
