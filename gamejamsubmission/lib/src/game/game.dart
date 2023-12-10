@@ -32,6 +32,8 @@ class FlameFrostyGame extends FlameGame
   WidgetRef? ref;
   Character? playerFlame;
 
+  bool defeated = false;
+
   final regularText = TextPaint(
       style: TextStyle(color: ColorTheme.fieldColorBoring, fontSize: 80));
 
@@ -67,8 +69,10 @@ class FlameFrostyGame extends FlameGame
   }
 
   void _drawGame() {
+    defeated = false;
     config = ref!.read(gameConfigProvider);
     game = ref!.read(gameProvider)!;
+    freezes = [];
     // clear field before (re)drawing the game
     removeAll(children.whereType<Field>());
     removeAll(children.whereType<CharacterLayout>());
@@ -215,6 +219,8 @@ class FlameFrostyGame extends FlameGame
 
     freezePlayer.onJumpCompleted = () {
       Future.delayed(const Duration(milliseconds: 500), () {
+        print('JUMP');
+        if (defeated) return;
         // let the freeze jump and also spawn a new one
         GameEventProcessor().jumpFreeze(preparedFreeze);
       });
@@ -249,6 +255,7 @@ class FlameFrostyGame extends FlameGame
   }
 
   void jumpFreeze(int targetFieldId, Character freeze) {
+    if (defeated) return;
     final field = FieldHelper.getFieldComponentByFieldId(targetFieldId);
     final targetPosition = game.getLocationByFieldSituation(
         fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
@@ -259,7 +266,7 @@ class FlameFrostyGame extends FlameGame
   }
 
   void detectDefeated() {
-    if (game.gameState == GameState.defeated) return;
+    if (defeated) return;
     // check if flame and any frosty are on the same field
     final flameFieldSituation =
         game.getSituationFieldById(flameCurrentField.fieldConfig.fieldId);
@@ -268,14 +275,11 @@ class FlameFrostyGame extends FlameGame
         .where((c) => c.fromPlayer.id != 'flame')
         .isNotEmpty) {
       playerFlame!.characterLayout.setDefeated();
-
-      removeAll(children.whereType<CharacterLayout>());
-      SituationProcessor.clear();
-      freezes = [];
-
+      defeated = true;
       // aaaauuw frosties on the field... defeated
       Future.delayed(const Duration(seconds: 2), () {
         GameEventProcessor().flameDefeated();
+        SituationProcessor.clear();
       });
     }
   }

@@ -15,8 +15,10 @@ class SituationProcessor {
         .where((f) => f.characters.isNotEmpty)) {
       situationField.characters.clear();
 
-      // update situationfield
-      _persistSituationField(situationField);
+      // replace situationField
+      final indexOfField = situationFields
+          .indexWhere((f) => f.field.fieldId == situationField.field.fieldId);
+      situationFields[indexOfField] = situationField;
     }
     return game.situation.instanceWith(fields: situationFields);
   }
@@ -42,13 +44,18 @@ class SituationProcessor {
     final game = globalScope.read(gameProvider)!;
     final situationFields = game.situation.fields;
 
-    final originFieldSituation = game.getSituationFieldById(originFieldId);
-    final targetFieldSituation = game.getSituationFieldById(targetFieldId);
+    try {
+      final originFieldSituation = game.getSituationFieldById(originFieldId);
+      final targetFieldSituation = game.getSituationFieldById(targetFieldId);
 
-    originFieldSituation.characters.remove(freeze);
-    targetFieldSituation.characters.add(freeze);
-    _persistSituationField(originFieldSituation);
-    _persistSituationField(targetFieldSituation);
+      originFieldSituation.characters.remove(freeze);
+      targetFieldSituation.characters.add(freeze);
+      print('FREEZE ADDED ON FIELD');
+      _persistSituationField(originFieldSituation);
+      _persistSituationField(targetFieldSituation);
+    } catch (e) {
+      print(e);
+    }
 
     return game.situation.instanceWith(fields: situationFields);
   }
