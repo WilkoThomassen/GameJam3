@@ -199,12 +199,14 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
   Future _startSpawningFrosties() async {
     for (int index = 1; index <= currentLevel.frosties; index++) {
       if (_cancelSpawning) break;
-      await Future.delayed(const Duration(milliseconds: 1000), () async {
+      await Future.delayed(Duration(milliseconds: currentLevel.spawnDelay),
+          () async {
         // cancel when game is over
         if (_cancelSpawning) return;
         // introduce new freeze to the board
         gameEventProcessor.prepareFreeze();
-        await Future.delayed(const Duration(milliseconds: 500), () {
+        final spawnDelay = (currentLevel.spawnDelay / 2).round();
+        await Future.delayed(Duration(milliseconds: spawnDelay), () {
           // cancel when game is over
           if (_cancelSpawning) return;
           // spawn it
