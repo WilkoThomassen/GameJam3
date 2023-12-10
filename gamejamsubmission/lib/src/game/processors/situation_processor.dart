@@ -8,9 +8,13 @@ class SituationProcessor {
   static Situation clear() {
     final game = globalScope.read(gameProvider)!;
     final situationFields = game.situation.fields;
-    for (var situationField
-        in globalScope.read(gameProvider)!.situation.fields) {
+    for (var situationField in globalScope
+        .read(gameProvider)!
+        .situation
+        .fields
+        .where((f) => f.characters.isNotEmpty)) {
       situationField.characters.clear();
+
       // update situationfield
       _persistSituationField(situationField);
     }

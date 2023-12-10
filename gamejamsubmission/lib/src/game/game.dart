@@ -22,6 +22,7 @@ import '../game_config/config.dart';
 import 'graphics/graphics.dart';
 import 'models/gameplay/game_input.dart';
 import 'processors/field_processor.dart';
+import 'processors/situation_processor.dart';
 
 class FlameFrostyGame extends FlameGame
     with RiverpodGameMixin, KeyboardEvents, HasCollisionDetection {
@@ -41,6 +42,8 @@ class FlameFrostyGame extends FlameGame
   FlameFrostyGame({super.children, super.world, super.camera});
 
   Iterable<Field> get fields => children.whereType<Field>();
+
+  late Field flameCurrentField;
 
   void initialize(WidgetRef widgetRef) {
     ref ??= widgetRef;
@@ -138,10 +141,12 @@ class FlameFrostyGame extends FlameGame
               fieldPosition: field.position, fieldId: field.fieldConfig.fieldId)
           ..priority = field.fieldConfig.fieldId +
               GraphicsConstants.drawLayerPriorityTreshold);
+        flameCurrentField = field;
         return PlacementResult(
             placedCharacter: playerFlame!, fieldId: field.fieldConfig.fieldId);
       }
     }
+
     // todo: find another solution for this dummy (actual dead code)
     return PlacementResult(placedCharacter: playerFlame!, fieldId: 1);
   }
@@ -167,6 +172,7 @@ class FlameFrostyGame extends FlameGame
     FlameAudio.play('sfx/jump.mp3');
     // get field on the left
     Field targetField = FieldHelper.getFieldComponentByFieldId(targetFieldId);
+    flameCurrentField = targetField;
 
     if (targetField.fieldConfig.isFinish) {
       GameEventProcessor().flameFinished();
@@ -180,14 +186,16 @@ class FlameFrostyGame extends FlameGame
         game.getLocationByFieldSituation(
             fieldPosition: targetField.position,
             fieldId: targetField.fieldConfig.fieldId));
+
+    detectDefeated();
   }
 
   void prepareFreeze() {
     final freezeSize = game.level.fieldSize / 2.5;
 
     // create flame to spawn
-    final freezeData = CharacterGenerator()
-        .generate(freezeSize, color: ColorTheme.freeze, isShady: true);
+    final freezeData = CharacterGenerator().generate(freezeSize,
+        color: ColorTheme.freeze, isShady: true, id: game.level.levelName);
     final freezePlayer = CharacterLayout(freezeData);
 
     final preparedFreeze = Character(
@@ -247,6 +255,29 @@ class FlameFrostyGame extends FlameGame
     freeze.characterLayout.priority =
         field.fieldConfig.fieldId + GraphicsConstants.drawLayerPriorityTreshold;
     freeze.characterLayout.jumpTo(targetPosition);
+    detectDefeated();
+  }
+
+  void detectDefeated() {
+    if (game.gameState == GameState.defeated) return;
+    // check if flame and any frosty are on the same field
+    final flameFieldSituation =
+        game.getSituationFieldById(flameCurrentField.fieldConfig.fieldId);
+
+    if (flameFieldSituation.characters
+        .where((c) => c.fromPlayer.id != 'flame')
+        .isNotEmpty) {
+      playerFlame!.characterLayout.setDefeated();
+
+      removeAll(children.whereType<CharacterLayout>());
+      SituationProcessor.clear();
+      freezes = [];
+
+      // aaaauuw frosties on the field... defeated
+      Future.delayed(const Duration(seconds: 2), () {
+        GameEventProcessor().flameDefeated();
+      });
+    }
   }
 
   @override

@@ -69,6 +69,7 @@ class GameEventProcessor {
   }
 
   void jumpFreeze(Character freezeToJump) {
+    if (globalScope.read(gameProvider)!.gameState != GameState.started) return;
     final surrFields = FieldProcessor.getAvailableSurroundingFieldIds(
         freezeToJump.locationFieldId);
     surrFields.sort();

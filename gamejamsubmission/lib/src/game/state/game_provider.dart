@@ -14,6 +14,7 @@ class GameNotifier extends StateNotifier<FlameFrostiesGame?> {
   FlameFrostiesGame get gameState => state!;
 
   void newGame(GameConfig config, int gameId) {
+    //_clear();
     // (re)create Game
     Level playLevel = LevelGenerator.generateLevel(gameId.toString());
 

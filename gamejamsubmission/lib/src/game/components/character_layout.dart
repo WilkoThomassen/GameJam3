@@ -1,15 +1,13 @@
-import 'package:flame/collisions.dart';
 import 'package:gamejamsubmission/src/game/graphics/models/character_data.dart';
 import 'package:gamejamsubmission/src/game/models/player.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
-import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 import 'dart:ui';
 
 import '../graphics/color_theme.dart';
 
-class CharacterLayout extends PositionComponent with CollisionCallbacks {
+class CharacterLayout extends PositionComponent {
   final CharacterData characterData;
   late Paint body;
   late Paint bodyBorder;
@@ -28,8 +26,6 @@ class CharacterLayout extends PositionComponent with CollisionCallbacks {
 
   bool toLeft = true;
   bool defeated = false;
-
-  late ShapeHitbox hitbox;
 
   final int explodeAnimationDurationMs = 500;
 
@@ -69,12 +65,6 @@ class CharacterLayout extends PositionComponent with CollisionCallbacks {
     rightIrisLookUpOffset = Offset(rightEyeOffset.dx, rightEyeOffset.dy / 1.25);
 
     if (characterData.isFlipped) flipHorizontally();
-
-    // define hitbox for collision
-    hitbox = CircleHitbox()
-      ..renderShape = false
-      ..paint = eyeBorder;
-    add(hitbox);
   }
 
   void _setShader() {
@@ -87,6 +77,12 @@ class CharacterLayout extends PositionComponent with CollisionCallbacks {
         body.color.withGreen(255),
       ],
     );
+  }
+
+  void setDefeated() {
+    body.color = ColorTheme.frozen;
+    defeated = true;
+    _setShader();
   }
 
   void jumpTo(Vector2 targetPosition) {
@@ -173,20 +169,5 @@ class CharacterLayout extends PositionComponent with CollisionCallbacks {
 
   Offset _getDeadEyeOffset(Offset offset, double size) {
     return Offset(offset.dx + size, offset.dy + size);
-  }
-
-  @override
-  void onCollisionStart(
-    Set<Vector2> intersectionPoints,
-    PositionComponent other,
-  ) {
-    super.onCollisionStart(intersectionPoints, other);
-    // only defeated when collision is with flame
-    if (body.color == ColorTheme.flame) {
-      body.color = ColorTheme.frozen;
-      defeated = true;
-      GameEventProcessor().flameDefeated();
-      _setShader();
-    }
   }
 }

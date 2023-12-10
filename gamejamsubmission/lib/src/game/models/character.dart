@@ -9,7 +9,7 @@ class Character {
       required this.characterLayout});
   Player fromPlayer;
   final bool isAnimating;
-  final CharacterLayout characterLayout;
+  CharacterLayout characterLayout;
   final bool isFlame;
 
   int locationFieldId = 0;
