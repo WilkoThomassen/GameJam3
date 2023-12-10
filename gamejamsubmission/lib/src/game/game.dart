@@ -73,7 +73,7 @@ class BakiTakiGame extends FlameGame
     removeAll(children.whereType<TextComponent>());
 
     // add level nr
-    add(TextComponent(text: game.gameId.toString(), textRenderer: regularText)
+    add(TextComponent(text: game.level.levelName, textRenderer: regularText)
       ..position = Vector2(50, 50));
 
     // define position of the first field

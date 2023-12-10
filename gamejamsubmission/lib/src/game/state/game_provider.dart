@@ -15,9 +15,9 @@ class GameNotifier extends StateNotifier<BakiGame?> {
 
   BakiGame get gameState => state!;
 
-  void newGame(GameConfig config) {
+  void newGame(GameConfig config, int gameId) {
     // (re)create Game
-    Level playLevel = LevelGenerator.generateLevel();
+    Level playLevel = LevelGenerator.generateLevel(gameId.toString());
     List<Player> players = PlayerGenerator.generatePlayers(config.players);
 
     var situationFields = playLevel.fields

@@ -22,8 +22,8 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
-  LevelDefinition get currentLevel => Levels.levels[currentLevelIndex];
-  int currentLevelIndex = 0;
+  LevelDefinition get currentLevel => Levels.levels[currentLevelIndex - 1];
+  int currentLevelIndex = 1;
   GameState gameState = GameState.idle;
 
   bool _cancelSpawning = false;
@@ -127,7 +127,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
               child: IconButton(
                 icon: const Icon(Icons.play_circle_fill_outlined),
                 color: ColorTheme.buttonForeground,
-                hoverColor: ColorTheme.bakiPlayerOne,
+                hoverColor: ColorTheme.fieldColorBoring,
                 iconSize: 150,
                 onPressed: () {
                   _startGame();
@@ -163,14 +163,15 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-              padding: EdgeInsets.only(bottom: 150),
+              padding: EdgeInsets.only(bottom: 80),
               child: IconButton(
                 icon: const Icon(Icons.replay_outlined),
                 color: ColorTheme.buttonForeground,
-                hoverColor: ColorTheme.bakiPlayerOne,
+                hoverColor: ColorTheme.fieldColorBoring,
                 iconSize: 200,
                 onPressed: () {
-                  currentLevelIndex = 0;
+                  // reset level
+                  currentLevelIndex = 1;
                   _startGame();
                 },
               )),
@@ -183,7 +184,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
     // set config based on level
     ref.read(gameConfigProvider.notifier).setGridSize(currentLevel.gridSize);
 
-    gameEventProcessor.createGame();
+    gameEventProcessor.createGame(currentLevelIndex);
     gameEventProcessor.startGame();
     gameRef.initialize(ref);
 

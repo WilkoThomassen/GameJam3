@@ -6,7 +6,7 @@ import 'package:gamejamsubmission/src/game/models/models.dart';
 import '../../game_config/config.dart';
 
 class LevelGenerator {
-  static Level generateLevel() {
+  static Level generateLevel(String levelName) {
     int fieldId = 1;
     bool hasFinish = false;
 
@@ -44,7 +44,10 @@ class LevelGenerator {
     }
 
     return Level(
-        fields: fields, fieldSize: 800 / gridSize, obstacles: obstacles);
+        fields: fields,
+        fieldSize: 800 / gridSize,
+        obstacles: obstacles,
+        levelName: levelName);
   }
 
   /// returns a list of fieldIndexes (fieldId's) which should have an obstacle

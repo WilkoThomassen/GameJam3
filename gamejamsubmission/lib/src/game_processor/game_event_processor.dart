@@ -18,11 +18,11 @@ import '../game_config/config.dart';
 /// it comsumes the event and processes the event related functionality in every layer
 class GameEventProcessor {
   /// Game gets created with a specific config
-  void createGame() {
+  void createGame(int gameId) {
     // get config and setup game
     GameConfig config = globalScope.read(gameConfigProvider);
     // generate game
-    globalScope.read(gameProvider.notifier).newGame(config);
+    globalScope.read(gameProvider.notifier).newGame(config, gameId);
   }
 
   void startGame() {

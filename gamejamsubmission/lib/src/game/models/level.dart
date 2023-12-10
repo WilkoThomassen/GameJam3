@@ -7,21 +7,11 @@ class Level {
       {required this.fields,
       required this.fieldSize,
       required this.obstacles,
-      this.theme});
+      required this.levelName});
   final List<FieldConfig> fields;
   final double fieldSize;
-  final LevelTheme? theme;
+  final String levelName;
 
   // supporting properties
   final List<int> obstacles;
-}
-
-class LevelTheme {
-  LevelTheme(
-      {required this.background,
-      required this.foreground,
-      required this.doodleType});
-  final Color background;
-  final Color foreground;
-  final String doodleType; // patternsPackage > Star5, Star7, Triangle
 }

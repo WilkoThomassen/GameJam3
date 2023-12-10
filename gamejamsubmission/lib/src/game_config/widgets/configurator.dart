@@ -107,7 +107,7 @@ class ConfiguratorState extends ConsumerState<Configurator>
                   children: [
                     Button(
                       onPressed: () {
-                        gameEventProcessor.createGame();
+                        gameEventProcessor.createGame(1);
                         gameEventProcessor.startGame();
                       },
                       text: 'Regenerate level',
