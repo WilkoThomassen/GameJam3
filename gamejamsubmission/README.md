@@ -23,7 +23,7 @@ become unbeatable. You never know how far you'r gonna get
 The game is developed within the timespan of the game, however: 
 Knowledge for fieldrendering (perspective play board) is used from another
 project I'm working on where I developed the board engine. 
-I could show you this referenced material.
+I could show you this referenced material when required.
 
 In my opinion this shouldn't disqualify me. All gameplay, movement logic,
 state management, animations (including moving arena at startup) was thought 
