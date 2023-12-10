@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 
-// class Baki {
-//   int id;
-//   late BakiData data;
-//   Baki.generate(this.id, double size, Color color) {
-//     // set all the random data for the baki here
-//     data = DefaultBakiGenerator().generate(size, color);
-//   }
-// }
-
-class BakiData {
+class CharacterData {
   double size;
   String? id;
   final Offset startPoint;
@@ -25,7 +16,7 @@ class BakiData {
   final bool isAnimating;
   bool isShady;
 
-  BakiData(
+  CharacterData(
       {required this.size,
       required this.startPoint,
       required this.color,

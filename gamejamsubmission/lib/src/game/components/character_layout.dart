@@ -1,5 +1,5 @@
 import 'package:flame/collisions.dart';
-import 'package:gamejamsubmission/src/game/graphics/models/baki_data.dart';
+import 'package:gamejamsubmission/src/game/graphics/models/character_data.dart';
 import 'package:gamejamsubmission/src/game/models/player.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -9,8 +9,8 @@ import 'dart:ui';
 
 import '../graphics/color_theme.dart';
 
-class BakiLayout extends PositionComponent with CollisionCallbacks {
-  final BakiData bakiData;
+class CharacterLayout extends PositionComponent with CollisionCallbacks {
+  final CharacterData characterData;
   late Paint body;
   late Paint bodyBorder;
   late Paint eye;
@@ -33,13 +33,13 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
 
   final int explodeAnimationDurationMs = 500;
 
-  BakiLayout(this.bakiData)
+  CharacterLayout(this.characterData)
       : super(
-          size: Vector2(bakiData.size, bakiData.size),
+          size: Vector2(characterData.size, characterData.size),
           anchor: Anchor.topCenter,
         ) {
     body = Paint();
-    body.color = bakiData.color;
+    body.color = characterData.color;
     body.style = PaintingStyle.fill;
     _setShader();
     bodyBorder = Paint()
@@ -57,7 +57,7 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
       ..color = const Color.fromARGB(255, 0, 0, 0)
       ..style = PaintingStyle.fill;
 
-    double baseLeftEyeOffset = bakiData.size / 3;
+    double baseLeftEyeOffset = characterData.size / 3;
     double baseRightEyeOffset = baseLeftEyeOffset * 1.4;
     leftEyeOffset = Offset(baseLeftEyeOffset, baseLeftEyeOffset);
     rightEyeOffset = Offset(baseRightEyeOffset, baseRightEyeOffset);
@@ -68,7 +68,7 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
     leftIrisLookUpOffset = Offset(leftEyeOffset.dx, leftEyeOffset.dy / 1.25);
     rightIrisLookUpOffset = Offset(rightEyeOffset.dx, rightEyeOffset.dy / 1.25);
 
-    if (bakiData.isFlipped) flipHorizontally();
+    if (characterData.isFlipped) flipHorizontally();
 
     // define hitbox for collision
     hitbox = CircleHitbox()
@@ -78,10 +78,10 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
   }
 
   void _setShader() {
-    double gradientOffset = bakiData.size / 2;
+    double gradientOffset = characterData.size / 2;
     body.shader = Gradient.linear(
       Offset(gradientOffset, gradientOffset), // right lower corner
-      bakiData.startPoint,
+      characterData.startPoint,
       [
         body.color,
         body.color.withGreen(255),
@@ -108,7 +108,7 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
     final targetPositionOffset =
         Offset(targetPosition.x - position.x, targetPosition.y - position.y);
 
-    // determine curved path to let the baki explode to
+    // determine curved path to let the character explode to
     jumpToNeighborPath.arcToPoint(targetPositionOffset,
         radius: Radius.circular(10),
         rotation: 45,
@@ -134,31 +134,39 @@ class BakiLayout extends PositionComponent with CollisionCallbacks {
 
   @override
   void render(Canvas canvas) {
-    canvas.drawPath(bakiData.path, body);
-    canvas.drawPath(bakiData.path, bodyBorder);
+    canvas.drawPath(characterData.path, body);
+    canvas.drawPath(characterData.path, bodyBorder);
     if (!defeated) {
-      canvas.drawCircle(leftEyeOffset, bakiData.leftEyeSize, eye);
-      canvas.drawCircle(leftEyeOffset, bakiData.leftEyeSize, eyeBorder);
-      canvas.drawCircle(leftIrisOffset, bakiData.leftEyeSize / 6, iris);
-      canvas.drawCircle(rightEyeOffset, bakiData.rightEyeSize, eye);
-      canvas.drawCircle(rightEyeOffset, bakiData.rightEyeSize, eyeBorder);
-      canvas.drawCircle(rightIrisOffset, bakiData.rightEyeSize / 6, iris);
+      canvas.drawCircle(leftEyeOffset, characterData.leftEyeSize, eye);
+      canvas.drawCircle(leftEyeOffset, characterData.leftEyeSize, eyeBorder);
+      canvas.drawCircle(leftIrisOffset, characterData.leftEyeSize / 6, iris);
+      canvas.drawCircle(rightEyeOffset, characterData.rightEyeSize, eye);
+      canvas.drawCircle(rightEyeOffset, characterData.rightEyeSize, eyeBorder);
+      canvas.drawCircle(rightIrisOffset, characterData.rightEyeSize / 6, iris);
     } else {
       // dead eyes
-      canvas.drawLine(leftEyeOffset,
-          _getDeadEyeOffset(leftEyeOffset, bakiData.leftEyeSize), eyeBorder);
-
       canvas.drawLine(
-          Offset(leftEyeOffset.dx, leftEyeOffset.dy + bakiData.leftEyeSize),
-          Offset(leftEyeOffset.dx + bakiData.leftEyeSize, leftEyeOffset.dy),
+          leftEyeOffset,
+          _getDeadEyeOffset(leftEyeOffset, characterData.leftEyeSize),
           eyeBorder);
 
-      canvas.drawLine(rightEyeOffset,
-          _getDeadEyeOffset(rightEyeOffset, bakiData.rightEyeSize), eyeBorder);
+      canvas.drawLine(
+          Offset(
+              leftEyeOffset.dx, leftEyeOffset.dy + characterData.leftEyeSize),
+          Offset(
+              leftEyeOffset.dx + characterData.leftEyeSize, leftEyeOffset.dy),
+          eyeBorder);
 
       canvas.drawLine(
-          Offset(rightEyeOffset.dx, rightEyeOffset.dy + bakiData.rightEyeSize),
-          Offset(rightEyeOffset.dx + bakiData.rightEyeSize, rightEyeOffset.dy),
+          rightEyeOffset,
+          _getDeadEyeOffset(rightEyeOffset, characterData.rightEyeSize),
+          eyeBorder);
+
+      canvas.drawLine(
+          Offset(rightEyeOffset.dx,
+              rightEyeOffset.dy + characterData.rightEyeSize),
+          Offset(rightEyeOffset.dx + characterData.rightEyeSize,
+              rightEyeOffset.dy),
           eyeBorder);
     }
   }

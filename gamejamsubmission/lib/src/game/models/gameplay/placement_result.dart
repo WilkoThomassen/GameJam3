@@ -1,10 +1,10 @@
 import 'package:gamejamsubmission/src/game/models/field.dart';
 
-import '../baki.dart';
+import '../character.dart';
 
 class PlacementResult {
-  final Baki placedBaki;
+  final Character placedCharacter;
   final int fieldId;
 
-  PlacementResult({required this.placedBaki, required this.fieldId});
+  PlacementResult({required this.placedCharacter, required this.fieldId});
 }

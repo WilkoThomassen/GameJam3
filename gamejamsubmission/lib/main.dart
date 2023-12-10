@@ -11,4 +11,4 @@ void main() {
 
 ProviderContainer globalScope = ProviderContainer();
 GameEventProcessor gameEventProcessor = GameEventProcessor();
-BakiTakiGame gameRef = BakiTakiGame();
+FlameFrostyGame gameRef = FlameFrostyGame();

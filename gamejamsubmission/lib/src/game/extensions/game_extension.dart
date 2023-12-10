@@ -3,27 +3,7 @@ import 'package:flame/components.dart';
 
 import '../../game_config/models/game_config.dart';
 
-extension GameExtension on BakiGame {
-  int getNextPlayerIndex() {
-    return situation.turns % players.length;
-  }
-
-  Player getNextPlayer() {
-    return players[getNextPlayerIndex()];
-  }
-
-  /// field is available when it not holds obstacle or baki from another player
-  bool isFieldAvailableForPlayer(int fieldId) {
-    if (getObstacleFieldIndexes().contains(fieldId)) return false;
-
-    var situationField = getSituationFieldById(fieldId);
-    // if field is still empty then its available
-    if (situationField.bakis.isEmpty) return true;
-    // else field is available if any bakis are of its own
-    return (situationField.bakis
-        .any((sf) => sf.fromPlayer == situation.turnPlayer));
-  }
-
+extension GameExtension on FlameFrostiesGame {
   List<int> getObstacleFieldIndexes() {
     return level.fields
         .where((f) => f.hasObstacle || f.hasHighObstacle)
@@ -38,33 +18,33 @@ extension GameExtension on BakiGame {
   Vector2 getLocationByFieldSituation(
       {required Vector2 fieldPosition, required int fieldId}) {
     final fieldSituation = getSituationFieldById(fieldId);
-    final fieldBakiCount = fieldSituation.bakis.length;
+    final fieldCharacterCount = fieldSituation.characters.length;
 
     final centerOffset = level.fieldSize * 0.15;
-    var bakiXPosition = fieldPosition.x - (level.fieldSize / 2);
+    var characterXPosition = fieldPosition.x - (level.fieldSize / 2);
 
-    var bakiYPosition = fieldPosition.y - (level.fieldSize / 1.5);
+    var characterYPosition = fieldPosition.y - (level.fieldSize / 1.5);
 
-    // more baki's on field means placement more to the lef or right
-    switch (fieldBakiCount) {
+    // more characters on field means placement more to the lef or right
+    switch (fieldCharacterCount) {
       case 1:
         {
-          bakiXPosition -= centerOffset;
+          characterXPosition -= centerOffset;
           break;
         }
       case 2:
         {
-          bakiXPosition -= -1 * centerOffset;
+          characterXPosition -= -1 * centerOffset;
           break;
         }
       case 3:
         {
-          bakiYPosition += centerOffset;
+          characterYPosition += centerOffset;
           break;
         }
     }
 
-    final centerOfField = Vector2(bakiXPosition, bakiYPosition);
+    final centerOfField = Vector2(characterXPosition, characterYPosition);
 
     return centerOfField;
   }

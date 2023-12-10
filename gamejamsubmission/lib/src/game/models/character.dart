@@ -1,15 +1,15 @@
-import 'package:gamejamsubmission/src/game/components/baki_layout.dart';
+import 'package:gamejamsubmission/src/game/components/character_layout.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
 
-class Baki {
-  Baki(
+class Character {
+  Character(
       {required this.fromPlayer,
       this.isAnimating = false,
       this.isFlame = false,
-      required this.bakiLayout});
+      required this.characterLayout});
   Player fromPlayer;
   final bool isAnimating;
-  final BakiLayout bakiLayout;
+  final CharacterLayout characterLayout;
   final bool isFlame;
 
   int locationFieldId = 0;

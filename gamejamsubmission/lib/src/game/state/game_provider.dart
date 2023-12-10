@@ -7,33 +7,30 @@ import 'package:riverpod/riverpod.dart';
 import '../../../main.dart';
 import '../processors/situation_processor.dart';
 
-final gameProvider =
-    StateNotifierProvider<GameNotifier, BakiGame?>((ref) => GameNotifier());
+final gameProvider = StateNotifierProvider<GameNotifier, FlameFrostiesGame?>(
+    (ref) => GameNotifier());
 
-class GameNotifier extends StateNotifier<BakiGame?> {
+class GameNotifier extends StateNotifier<FlameFrostiesGame?> {
   GameNotifier() : super(null);
 
-  BakiGame get gameState => state!;
+  FlameFrostiesGame get gameState => state!;
 
   void newGame(GameConfig config, int gameId) {
     // (re)create Game
     Level playLevel = LevelGenerator.generateLevel(gameId.toString());
-    List<Player> players = PlayerGenerator.generatePlayers(config.players);
 
     var situationFields = playLevel.fields
-        .map((f) => SituationField(bakis: [], field: f))
+        .map((f) => SituationField(characters: [], field: f))
         .toList();
 
-    state = BakiGame(
+    state = FlameFrostiesGame(
         gameId: state != null ? gameState.gameId + 1 : 1,
-        players: players,
         level: playLevel,
         gameState: GameState.started,
-        situation:
-            Situation(turnPlayer: players.first, fields: situationFields));
+        situation: Situation(fields: situationFields));
   }
 
-  void placePlayerOnField(Baki player, int fieldId) {
+  void placePlayerOnField(Character player, int fieldId) {
     // place the baki on the field
     final updatedSituation =
         SituationProcessor.placePlayerOnField(player, fieldId);
@@ -46,7 +43,7 @@ class GameNotifier extends StateNotifier<BakiGame?> {
     state = gameState.instanceWith(situation: updatedSituation);
   }
 
-  void moveFreeze(Baki freeze, int originFieldId, int targetFieldId) {
+  void moveFreeze(Character freeze, int originFieldId, int targetFieldId) {
     // move freeze from one field to another
     final updatedSituation =
         SituationProcessor.moveFreeze(freeze, originFieldId, targetFieldId);

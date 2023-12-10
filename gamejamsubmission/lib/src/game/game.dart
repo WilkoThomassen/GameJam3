@@ -7,11 +7,11 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:gamejamsubmission/src/game/components/baki_layout.dart';
+import 'package:gamejamsubmission/src/game/components/character_layout.dart';
 import 'package:gamejamsubmission/src/game/components/components.dart';
 import 'package:gamejamsubmission/src/game/extensions/extensions.dart';
 import 'package:gamejamsubmission/src/game/game_exports.dart';
-import 'package:gamejamsubmission/src/game/generators/baki_generator.dart';
+import 'package:gamejamsubmission/src/game/generators/character_generator.dart';
 import 'package:gamejamsubmission/src/game/helpers/field_helper.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
 import 'package:gamejamsubmission/main.dart';
@@ -26,22 +26,22 @@ import 'graphics/graphics_constants.dart';
 import 'models/gameplay/game_input.dart';
 import 'processors/field_processor.dart';
 
-class BakiTakiGame extends FlameGame
+class FlameFrostyGame extends FlameGame
     with RiverpodGameMixin, KeyboardEvents, HasCollisionDetection {
   late GameConfig config;
-  late BakiGame game;
+  late FlameFrostiesGame game;
   late Vector2 gameSize;
   WidgetRef? ref;
-  Baki? playerFlame;
+  Character? playerFlame;
 
   final regularText = TextPaint(
       style: TextStyle(color: ColorTheme.fieldColorBoring, fontSize: 80));
 
   late AudioPool pool;
 
-  List<Baki> freezes = [];
+  List<Character> freezes = [];
 
-  BakiTakiGame({super.children, super.world, super.camera});
+  FlameFrostyGame({super.children, super.world, super.camera});
 
   Iterable<Field> get fields => children.whereType<Field>();
 
@@ -71,7 +71,7 @@ class BakiTakiGame extends FlameGame
     game = ref!.read(gameProvider)!;
     // clear field before (re)drawing the game
     removeAll(children.whereType<Field>());
-    removeAll(children.whereType<BakiLayout>());
+    removeAll(children.whereType<CharacterLayout>());
     removeAll(children.whereType<TextComponent>());
 
     // add level nr
@@ -127,33 +127,33 @@ class BakiTakiGame extends FlameGame
 
     // create flame to spawn
     final flameData =
-        BakiGenerator().generate(flameSize, color: ColorTheme.flame);
-    final flamePlayer = BakiLayout(flameData);
+        CharacterGenerator().generate(flameSize, color: ColorTheme.flame);
+    final flamePlayer = CharacterLayout(flameData);
 
-    playerFlame = Baki(
+    playerFlame = Character(
         isFlame: true,
         fromPlayer: Player(id: 'flame', name: 'flame', color: ColorTheme.flame),
-        bakiLayout: flamePlayer);
+        characterLayout: flamePlayer);
 
     // drop it on the first available field on the left side of the board
     for (final field in fields.toList().reversed) {
       if (!field.fieldConfig.hasObstacle &&
           !field.fieldConfig.hasHighObstacle) {
-        add(playerFlame!.bakiLayout
+        add(playerFlame!.characterLayout
           ..position = game.getLocationByFieldSituation(
               fieldPosition: field.position, fieldId: field.fieldConfig.fieldId)
           ..priority = field.fieldConfig.fieldId +
               GraphicsConstants.drawLayerPriorityTreshold);
         return PlacementResult(
-            placedBaki: playerFlame!, fieldId: field.fieldConfig.fieldId);
+            placedCharacter: playerFlame!, fieldId: field.fieldConfig.fieldId);
       }
     }
     // todo: find another solution for this dummy (actual dead code)
-    return PlacementResult(placedBaki: playerFlame!, fieldId: 1);
+    return PlacementResult(placedCharacter: playerFlame!, fieldId: 1);
   }
 
   GameInput getInput(Set<LogicalKeyboardKey> keysPressed) {
-    if (gameRef.playerFlame!.bakiLayout.defeated) return GameInput.none;
+    if (gameRef.playerFlame!.characterLayout.defeated) return GameInput.none;
 
     if (keysPressed.contains(LogicalKeyboardKey.space)) return GameInput.action;
     if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) return GameInput.up;
@@ -178,33 +178,35 @@ class BakiTakiGame extends FlameGame
       GameEventProcessor().flameFinished();
     }
 
-    gameRef.playerFlame!.bakiLayout.priority = targetField.fieldConfig.fieldId +
-        GraphicsConstants.drawLayerPriorityTreshold;
+    gameRef.playerFlame!.characterLayout.priority =
+        targetField.fieldConfig.fieldId +
+            GraphicsConstants.drawLayerPriorityTreshold;
 
-    gameRef.playerFlame!.bakiLayout.jumpTo(game.getLocationByFieldSituation(
-        fieldPosition: targetField.position,
-        fieldId: targetField.fieldConfig.fieldId));
+    gameRef.playerFlame!.characterLayout.jumpTo(
+        game.getLocationByFieldSituation(
+            fieldPosition: targetField.position,
+            fieldId: targetField.fieldConfig.fieldId));
   }
 
   void prepareFreeze() {
     final freezeSize = game.level.fieldSize / 2.5;
 
     // create flame to spawn
-    final freezeData = BakiGenerator()
+    final freezeData = CharacterGenerator()
         .generate(freezeSize, color: ColorTheme.freeze, isShady: true);
-    final freezePlayer = BakiLayout(freezeData);
+    final freezePlayer = CharacterLayout(freezeData);
 
-    final preparedFreeze = Baki(
+    final preparedFreeze = Character(
         isFlame: false,
         fromPlayer:
             Player(id: 'freeze', name: 'freeze', color: ColorTheme.freeze),
-        bakiLayout: freezePlayer);
+        characterLayout: freezePlayer);
 
     freezes.insert(0, preparedFreeze);
 
     final startPositionOffset = game.level.fieldSize * 1.1;
 
-    add(preparedFreeze.bakiLayout
+    add(preparedFreeze.characterLayout
       ..position = fields.first.position
       ..x += startPositionOffset
       ..y -= startPositionOffset);
@@ -235,21 +237,22 @@ class BakiTakiGame extends FlameGame
     final targetPosition = game.getLocationByFieldSituation(
         fieldPosition: spawnField.position,
         fieldId: spawnField.fieldConfig.fieldId);
-    freezes.first.bakiLayout.priority = spawnField.fieldConfig.fieldId +
+    freezes.first.characterLayout.priority = spawnField.fieldConfig.fieldId +
         GraphicsConstants.drawLayerPriorityTreshold;
-    freezes.first.bakiLayout.jumpTo(targetPosition);
+    freezes.first.characterLayout.jumpTo(targetPosition);
     resultFieldId = spawnField.fieldConfig.fieldId;
 
-    return PlacementResult(placedBaki: freezes.first, fieldId: resultFieldId);
+    return PlacementResult(
+        placedCharacter: freezes.first, fieldId: resultFieldId);
   }
 
-  void jumpFreeze(int targetFieldId, Baki freeze) {
+  void jumpFreeze(int targetFieldId, Character freeze) {
     final field = FieldHelper.getFieldComponentByFieldId(targetFieldId);
     final targetPosition = game.getLocationByFieldSituation(
         fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
-    freeze.bakiLayout.priority =
+    freeze.characterLayout.priority =
         field.fieldConfig.fieldId + GraphicsConstants.drawLayerPriorityTreshold;
-    freeze.bakiLayout.jumpTo(targetPosition);
+    freeze.characterLayout.jumpTo(targetPosition);
   }
 
   @override

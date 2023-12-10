@@ -1,15 +1,14 @@
 import 'dart:math';
-import 'package:gamejamsubmission/src/game/graphics/graphics.dart';
-import 'package:gamejamsubmission/src/game/graphics/models/baki_data.dart';
+import 'package:gamejamsubmission/src/game/graphics/models/character_data.dart';
 import 'package:flutter/material.dart';
 
-class BakiGenerator {
+class CharacterGenerator {
   final int _edgesCount = 6;
   final int _minGrowth = 6;
   late Offset _startPoint;
 
-  BakiData generate(double size,
-      {Color? color, bool isShady = false, String? id}) {
+  CharacterData generate(double size,
+      {required Color color, bool isShady = false, String? id}) {
     double minEyesPadding = size / 3.5;
     double maxEyesPadding = size / 2.5;
     EdgeInsets eyesPadding =
@@ -24,16 +23,16 @@ class BakiGenerator {
     List<Offset> animationStartingPoints = createPoints(size);
     Path path = createPath(animationStartingPoints);
 
-    return BakiData(
+    return CharacterData(
       id: id,
       size: size,
-      color: color ?? ColorTheme.getRandomPlayerColor(),
+      color: color,
       isAnimating: true,
       startPoint: _startPoint,
       path: path,
       animationStartingPoints: animationStartingPoints,
       isShady: isShady,
-      isFlipped: Randomizer().getRandomBool(),
+      isFlipped: false,
       leftEyeSize: Randomizer().getRandom(minLeftEyeSize, maxLeftEyeSize),
       rightEyeSize: Randomizer().getRandom(minRightEyeSize, maxRightEyeSize),
       eyesPadding: eyesPadding,
@@ -127,12 +126,12 @@ class BakiGenerator {
   }
 }
 
-class BakiPoints {
+class CharacterPoints {
   List<Offset> destPoints;
   Offset? center;
   double? innerRad;
   String? id;
-  BakiPoints({
+  CharacterPoints({
     required this.destPoints,
     this.center,
     this.id,
@@ -157,10 +156,15 @@ class Randomizer {
 
 class ColorConstants {
   static Color get shadowColor => const Color.fromARGB(255, 68, 68, 68);
-  static Color get bakiEyeWhite => const Color.fromARGB(255, 253, 252, 240);
-  static Color get bakiEyeStroke => const Color.fromARGB(255, 68, 68, 68);
-  static Color get bakiPlayerOne => const Color.fromARGB(255, 55, 164, 248);
-  static Color get bakiPlayerTwo => const Color.fromARGB(255, 248, 181, 55);
-  static Color get bakiPlayerThree => const Color.fromARGB(255, 248, 55, 71);
-  static Color get bakiPlayerFour => const Color.fromARGB(255, 69, 179, 33);
+  static Color get characterEyeWhite =>
+      const Color.fromARGB(255, 253, 252, 240);
+  static Color get characterEyeStroke => const Color.fromARGB(255, 68, 68, 68);
+  static Color get characterPlayerOne =>
+      const Color.fromARGB(255, 55, 164, 248);
+  static Color get characterPlayerTwo =>
+      const Color.fromARGB(255, 248, 181, 55);
+  static Color get characterPlayerThree =>
+      const Color.fromARGB(255, 248, 55, 71);
+  static Color get characterPlayerFour =>
+      const Color.fromARGB(255, 69, 179, 33);
 }

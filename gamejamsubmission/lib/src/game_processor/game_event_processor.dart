@@ -37,7 +37,7 @@ class GameEventProcessor {
 
     globalScope
         .read(gameProvider.notifier)
-        .placePlayerOnField(placeResult.placedBaki, placeResult.fieldId);
+        .placePlayerOnField(placeResult.placedCharacter, placeResult.fieldId);
   }
 
   void jumpFlame(GameInput input) {
@@ -70,10 +70,10 @@ class GameEventProcessor {
     // manage it in game state
     globalScope
         .read(gameProvider.notifier)
-        .placePlayerOnField(placeResult.placedBaki, placeResult.fieldId);
+        .placePlayerOnField(placeResult.placedCharacter, placeResult.fieldId);
   }
 
-  void jumpFreeze(Baki freezeToJump) {
+  void jumpFreeze(Character freezeToJump) {
     final surrFields = FieldProcessor.getAvailableSurroundingFieldIds(
         freezeToJump.locationFieldId);
     surrFields.sort();

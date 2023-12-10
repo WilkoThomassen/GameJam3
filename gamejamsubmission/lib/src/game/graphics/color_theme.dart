@@ -17,21 +17,4 @@ class ColorTheme {
 
   static Color appBackground = Color.fromARGB(255, 218, 249, 255);
   static Color buttonForeground = Color.fromARGB(255, 9, 39, 63);
-
-  static Color get bakiPlayerOne => const Color.fromARGB(255, 55, 164, 248);
-  static Color get bakiPlayerTwo => const Color.fromARGB(255, 248, 181, 55);
-  static Color get bakiPlayerThree => const Color.fromARGB(255, 248, 55, 71);
-  static Color get bakiPlayerFour => const Color.fromARGB(255, 69, 179, 33);
-
-  static Color getRandomPlayerColor() {
-    int colorNr = Random().nextInt(4);
-    var colors = [
-      ColorTheme.bakiPlayerOne,
-      ColorTheme.bakiPlayerTwo,
-      ColorTheme.bakiPlayerThree,
-      ColorTheme.bakiPlayerFour,
-    ];
-
-    return colors[colorNr];
-  }
 }

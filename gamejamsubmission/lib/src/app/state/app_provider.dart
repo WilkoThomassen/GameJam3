@@ -9,13 +9,13 @@ final appProvider =
 
 class AppNotifier extends StateNotifier<App> {
   // TODO: use random nickname generator for name
-  AppNotifier(this.ref) : super(App(userName: 'BakiLord53'));
+  AppNotifier(this.ref) : super(App(userName: 'FrostyLord'));
 
   final Ref ref;
 
   void setupGame() {
     // TODO: this will change when game setup is in place
-    BakiGame? currentGame = ref.read(gameProvider);
+    FlameFrostiesGame? currentGame = ref.read(gameProvider);
     state = state.instanceWith(runningGame: currentGame);
   }
 }
