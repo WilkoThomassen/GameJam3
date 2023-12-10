@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gamejamsubmission/src/app/level.dart';
@@ -111,13 +113,15 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
             width: 500,
           ),
         ),
-        Align(
-          alignment: Alignment.center,
-          child: Image.asset(
-            'assets/img/defeated.png',
-            width: 500,
-          ),
-        ),
+        Padding(
+            padding: const EdgeInsets.only(top: 100),
+            child: Align(
+              alignment: Alignment.center,
+              child: Image.asset(
+                'assets/img/defeated.png',
+                width: 400,
+              ),
+            )),
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
@@ -206,7 +210,9 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
         // introduce new freeze to the board
         gameEventProcessor.prepareFreeze();
         final spawnDelay = (currentLevel.spawnDelay / 2).round();
-        await Future.delayed(Duration(milliseconds: spawnDelay), () {
+        // ensure they dont jump in sync
+        final actualSpawnDelay = spawnDelay - 100 + Random().nextInt(100);
+        await Future.delayed(Duration(milliseconds: actualSpawnDelay), () {
           // cancel when game is over
           if (_cancelSpawning) return;
           // spawn it
