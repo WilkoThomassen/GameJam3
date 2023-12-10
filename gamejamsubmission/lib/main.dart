@@ -1,4 +1,3 @@
-import 'package:gamejamsubmission/src/app/app.dart';
 import 'package:gamejamsubmission/src/game/game.dart';
 import 'package:gamejamsubmission/src/game_processor/game_event_processor.dart';
 import 'package:flutter/material.dart';
