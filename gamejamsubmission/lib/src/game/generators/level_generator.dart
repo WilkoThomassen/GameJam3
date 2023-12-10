@@ -23,7 +23,7 @@ class LevelGenerator {
         bool isObstacle = obstacles.contains(fieldId);
         bool isHighObstacle = !isObstacle && !playGround.contains(fieldId);
         bool isFinish = false;
-        if (!isObstacle && !hasFinish) {
+        if (!isObstacle && !isHighObstacle && !hasFinish) {
           isFinish = true;
           hasFinish = true;
         }
