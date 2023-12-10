@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:flame/input.dart';
 import 'package:flame/palette.dart';
@@ -23,6 +24,7 @@ import '../game_config/config.dart';
 import 'graphics/graphics.dart';
 import 'graphics/graphics_constants.dart';
 import 'models/gameplay/game_input.dart';
+import 'processors/field_processor.dart';
 
 class BakiTakiGame extends FlameGame
     with RiverpodGameMixin, KeyboardEvents, HasCollisionDetection {
@@ -218,19 +220,25 @@ class BakiTakiGame extends FlameGame
   /// spawns the latest freezes
   PlacementResult spawnFreeze() {
     int resultFieldId = 0;
-    for (final field in fields.toList()) {
-      if (!field.fieldConfig.hasObstacle &&
-          !field.fieldConfig.hasHighObstacle &&
-          !field.fieldConfig.isFinish) {
-        final targetPosition = game.getLocationByFieldSituation(
-            fieldPosition: field.position, fieldId: field.fieldConfig.fieldId);
-        freezes.first.bakiLayout.priority = field.fieldConfig.fieldId +
-            GraphicsConstants.drawLayerPriorityTreshold;
-        freezes.first.bakiLayout.jumpTo(targetPosition);
-        resultFieldId = field.fieldConfig.fieldId;
-        break;
-      }
-    }
+
+    final finishField = fields.firstWhere((f) => f.fieldConfig.isFinish);
+    final availableSurroudingFields =
+        FieldProcessor.getAvailableSurroundingFieldIds(
+            finishField.fieldConfig.fieldId);
+
+    final randomAvailaField = availableSurroudingFields[
+        Random().nextInt(availableSurroudingFields.length)];
+
+    final spawnField =
+        FieldHelper.getFieldComponentByFieldId(randomAvailaField);
+
+    final targetPosition = game.getLocationByFieldSituation(
+        fieldPosition: spawnField.position,
+        fieldId: spawnField.fieldConfig.fieldId);
+    freezes.first.bakiLayout.priority = spawnField.fieldConfig.fieldId +
+        GraphicsConstants.drawLayerPriorityTreshold;
+    freezes.first.bakiLayout.jumpTo(targetPosition);
+    resultFieldId = spawnField.fieldConfig.fieldId;
 
     return PlacementResult(placedBaki: freezes.first, fieldId: resultFieldId);
   }
