@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:gamejamsubmission/src/game/extensions/game_extension.dart';
 import 'package:gamejamsubmission/src/game/models/models.dart';
 
@@ -50,11 +52,11 @@ class SituationProcessor {
 
       originFieldSituation.characters.remove(freeze);
       targetFieldSituation.characters.add(freeze);
-      print('FREEZE ADDED ON FIELD');
       _persistSituationField(originFieldSituation);
       _persistSituationField(targetFieldSituation);
     } catch (e) {
-      print(e);
+      // last resort fix :( running out of game-jam time
+      log(e.toString());
     }
 
     return game.situation.instanceWith(fields: situationFields);

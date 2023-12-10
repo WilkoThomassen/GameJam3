@@ -65,8 +65,7 @@ class GameNotifier extends StateNotifier<FlameFrostiesGame?> {
   }
 
   void _clear() {
-    Future.delayed(Duration(seconds: 2), () {
-      print('CLEAR');
+    Future.delayed(const Duration(seconds: 2), () {
       final updatedSituation = SituationProcessor.clear();
       state = gameState.instanceWith(situation: updatedSituation);
     });

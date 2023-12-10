@@ -219,7 +219,6 @@ class FlameFrostyGame extends FlameGame
 
     freezePlayer.onJumpCompleted = () {
       Future.delayed(const Duration(milliseconds: 500), () {
-        print('JUMP');
         if (defeated) return;
         // let the freeze jump and also spawn a new one
         GameEventProcessor().jumpFreeze(preparedFreeze);

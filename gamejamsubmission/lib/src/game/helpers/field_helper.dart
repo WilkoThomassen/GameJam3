@@ -1,4 +1,3 @@
-import 'package:gamejamsubmission/src/game/models/field.dart';
 import 'package:gamejamsubmission/src/game/models/gameplay/game_input.dart';
 import 'package:gamejamsubmission/main.dart';
 import 'package:gamejamsubmission/src/game_config/config.dart';
@@ -9,8 +8,9 @@ class FieldHelper {
   static Field getFieldComponentByFieldId(int fieldId) {
     final fields = gameRef.children.whereType<Field>();
 
-    if (!fields.any((f) => f.fieldConfig.fieldId == fieldId))
-      return fields.first;
+    // if (!fields.any((f) => f.fieldConfig.fieldId == fieldId)) {
+    //   return fields.first;
+    // }
 
     return fields.firstWhere((f) => f.fieldConfig.fieldId == fieldId);
   }
