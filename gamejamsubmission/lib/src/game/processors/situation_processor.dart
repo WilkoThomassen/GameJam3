@@ -20,20 +20,20 @@ class SituationProcessor {
     return game.situation.instanceWith(fields: situationFields);
   }
 
-  // TODO: get game from provider
-  static Situation placePlayerOnField(Character baki, int fieldId) {
+  static Situation placePlayerOnField(Character character, int fieldId) {
     final game = globalScope.read(gameProvider)!;
     final situationFields = game.situation.fields;
     final situationField = game.getSituationFieldById(fieldId);
 
-    situationField.characters.add(baki);
+    situationField.characters.add(character);
 
     // update situationfield
     _persistSituationField(situationField);
 
     // return updated situation field and new turn in game
     return game.situation.instanceWith(
-        fields: situationFields, flameOnFieldId: baki.isFlame ? fieldId : null);
+        fields: situationFields,
+        flameOnFieldId: character.isFlame ? fieldId : null);
   }
 
   static Situation moveFreeze(

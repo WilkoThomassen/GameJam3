@@ -31,7 +31,7 @@ class GameNotifier extends StateNotifier<FlameFrostiesGame?> {
   }
 
   void placePlayerOnField(Character player, int fieldId) {
-    // place the baki on the field
+    // place the character on the field
     final updatedSituation =
         SituationProcessor.placePlayerOnField(player, fieldId);
 
