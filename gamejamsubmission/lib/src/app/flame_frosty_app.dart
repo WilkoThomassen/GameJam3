@@ -123,7 +123,7 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-              padding: EdgeInsets.only(bottom: 100),
+              padding: const EdgeInsets.only(bottom: 70),
               child: IconButton(
                 icon: const Icon(Icons.play_circle_fill_outlined),
                 color: ColorTheme.buttonForeground,
@@ -133,6 +133,17 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
                   _startGame();
                 },
               )),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 40),
+            child: Text(
+              'Use arrow keys to move around. Go to the green finish plate and avoid Frosties',
+              style:
+                  TextStyle(color: ColorTheme.buttonForeground, fontSize: 20),
+            ),
+          ),
         )
       ]),
     );
@@ -187,16 +198,17 @@ class FlameFrostAppState extends ConsumerState<FlameFrostyApp>
   }
 
   Future _startSpawningFrosties() async {
-    // TODO: find a way to cancel this when game is over
     for (int index = 1; index <= currentLevel.frosties; index++) {
       if (_cancelSpawning) break;
       await Future.delayed(const Duration(milliseconds: 1000), () async {
+        // cancel when game is over
         if (_cancelSpawning) return;
         // introduce new freeze to the board
         gameEventProcessor.prepareFreeze();
         await Future.delayed(const Duration(milliseconds: 500), () {
-          // spawn it
+          // cancel when game is over
           if (_cancelSpawning) return;
+          // spawn it
           gameEventProcessor.spawnFreeze();
         });
       });
