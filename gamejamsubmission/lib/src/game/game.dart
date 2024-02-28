@@ -296,7 +296,7 @@ class FlameFrostyGame extends FlameGame
 
   //   return KeyEventResult.handled;
   // }
-  // v1.1
+  // v1.1.1
 
   Vector2 _getFieldPosition(int row, int column, double size,
       Vector2 basePosition, bool hasObstacle, double perspective) {
