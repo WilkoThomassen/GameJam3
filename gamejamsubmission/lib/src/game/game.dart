@@ -283,19 +283,19 @@ class FlameFrostyGame extends FlameGame
     }
   }
 
-  @override
-  KeyEventResult onKeyEvent(
-    RawKeyEvent event,
-    Set<LogicalKeyboardKey> keysPressed,
-  ) {
-    if (event is RawKeyDownEvent) {
-      final input = getInput(keysPressed);
+  // @override
+  // KeyEventResult onKeyEvent(
+  //   RawKeyEvent event,
+  //   Set<LogicalKeyboardKey> keysPressed,
+  // ) {
+  //   if (event is RawKeyDownEvent) {
+  //     final input = getInput(keysPressed);
 
-      GameEventProcessor().jumpFlame(input);
-    }
+  //     GameEventProcessor().jumpFlame(input);
+  //   }
 
-    return KeyEventResult.handled;
-  }
+  //   return KeyEventResult.handled;
+  // }
 
   Vector2 _getFieldPosition(int row, int column, double size,
       Vector2 basePosition, bool hasObstacle, double perspective) {
